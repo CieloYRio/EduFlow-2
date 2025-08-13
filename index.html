@@ -31,7 +31,7 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 25%, #1d4ed8 50%, #1e40af 75%, #1e3a8a 100%);
+            background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 25%, #10b981 50%, #059669 75%, #047857 100%);
             color: white;
             padding: 40px;
             text-align: center;
@@ -207,8 +207,8 @@
 
         .subject-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.1);
-            border-color: #2563eb;
+            box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);
+            border-color: #3b82f6;
         }
 
         .subject-card h3 {
@@ -234,7 +234,7 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #2563eb, #1d4ed8);
+            background: linear-gradient(90deg, #3b82f6, #10b981);
             border-radius: 4px;
             transition: width 0.3s ease;
         }
@@ -302,7 +302,7 @@
         .stat-number {
             font-size: 2.5rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            background: linear-gradient(135deg, #3b82f6 0%, #10b981 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -382,15 +382,15 @@
         }
 
         .planner-tab.active {
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
             color: white;
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
 
         .planner-tab:hover:not(.active) {
-            background: rgba(37, 99, 235, 0.1);
-            color: #2563eb;
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
         }
 
         .planner-view {
@@ -424,14 +424,34 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📚 EduFlow Planner</h1>
+            <h1>📖 EduFlow Planner</h1>
             <p>Smart Curriculum Design for Modern Educators</p>
+        </div>
+
+        <!-- Participant Information Section -->
+        <div id="headerSubtitle" style="padding: 20px 40px; background: linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 100%); border-bottom: 1px solid rgba(148, 163, 184, 0.2);">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 16px;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="learnerName" style="font-size: 0.9rem; color: #374151; margin-bottom: 6px;">👨‍🎓 Learner's Name</label>
+                    <input type="text" id="learnerName" class="form-control" placeholder="Enter learner's name" style="background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(59, 130, 246, 0.3);" onchange="updateHeaderInfo()">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="teacherName" style="font-size: 0.9rem; color: #374151; margin-bottom: 6px;">👩‍🏫 Teacher's Name</label>
+                    <input type="text" id="teacherName" class="form-control" placeholder="Enter teacher's name" style="background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(16, 185, 129, 0.3);" onchange="updateHeaderInfo()">
+                </div>
+            </div>
+            <div id="headerInfo" style="display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; font-size: 0.95rem; color: #374151; display: none;">
+                <span id="headerLearner">👨‍🎓 Learner: <strong>Not Set</strong></span>
+                <span id="headerTeacher">👩‍🏫 Teacher: <strong>Not Set</strong></span>
+                <span id="headerGrade">🎓 Grade: <strong>Not Set</strong></span>
+                <span id="headerYear">📅 Year: <strong>Not Set</strong></span>
+            </div>
         </div>
 
         <div class="nav-tabs">
             <button class="nav-tab active" onclick="showView('overview')">📊 Overview</button>
             <button class="nav-tab" onclick="showView('subjects')">📖 Subjects</button>
-            <button class="nav-tab" onclick="showView('planner')">📅 Planner</button>
+            <button class="nav-tab" onclick="showView('planner')">📋 Curriculum Designer</button>
             <button class="nav-tab" onclick="showView('schedule')">🕐 Daily Schedule</button>
             <button class="nav-tab" onclick="showView('progress')">📈 Progress</button>
         </div>
@@ -462,19 +482,19 @@
                 <div class="curriculum-grid">
                     <div class="subject-card">
                         <h3>🔢 Mathematics</h3>
-                        <p>Currently working on: Algebra Fundamentals</p>
+                        <p>Ready to start: No lessons added yet</p>
                         <div class="progress-bar">
-                            <div class="progress-fill" style="width: 75%"></div>
+                            <div class="progress-fill" style="width: 0%"></div>
                         </div>
-                        <small style="color: #6b7280;">75% Complete</small>
+                        <small style="color: #6b7280;">0% Complete</small>
                     </div>
                     <div class="subject-card">
                         <h3>🔬 Science</h3>
-                        <p>Currently working on: Chemistry Basics</p>
+                        <p>Ready to start: No lessons added yet</p>
                         <div class="progress-bar">
-                            <div class="progress-fill" style="width: 60%"></div>
+                            <div class="progress-fill" style="width: 0%"></div>
                         </div>
-                        <small style="color: #6b7280;">60% Complete</small>
+                        <small style="color: #6b7280;">0% Complete</small>
                     </div>
                 </div>
             </div>
@@ -499,18 +519,104 @@
                     <h2 style="color: #1f2937; margin: 0;">Curriculum Planner</h2>
                 </div>
                 
-                <!-- Learner and Teacher Information -->
-                <div style="background: white; border-radius: 16px; padding: 24px; border: 2px solid #e5e7eb; margin-bottom: 20px;">
-                    <h3 style="margin-bottom: 16px; color: #1f2937;">👥 Participant Information</h3>
-                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+
+
+                <!-- Unified Calendar & Academic Configuration -->
+                <div style="background: white; border-radius: 16px; padding: 24px; border: 2px solid #0ea5e9; margin-bottom: 20px; border-left: 6px solid #0ea5e9;">
+                    <h3 style="margin-bottom: 20px; color: #1f2937; display: flex; align-items: center; gap: 8px;">
+                        📅 Academic Calendar Configuration
+                        <span style="font-size: 0.8rem; background: #0ea5e9; color: white; padding: 4px 8px; border-radius: 12px; font-weight: 500;">Applies to Both Views</span>
+                    </h3>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px;">
                         <div class="form-group">
-                            <label for="learnerName">👨‍🎓 Learner's Name</label>
-                            <input type="text" id="learnerName" class="form-control" placeholder="Enter learner's full name">
+                            <label for="globalCountryRegion">🌍 Country/Region</label>
+                            <select id="globalCountryRegion" class="form-control" onchange="updateGlobalCountrySettings()">
+                                <option value="us">🇺🇸 United States</option>
+                                <option value="uk">🇬🇧 United Kingdom</option>
+                                <option value="ca">🇨🇦 Canada</option>
+                                <option value="au">🇦🇺 Australia</option>
+                                <option value="nz">🇳🇿 New Zealand</option>
+                                <option value="sg">🇸🇬 Singapore</option>
+                                <option value="in">🇮🇳 India</option>
+                                <option value="cn">🇨🇳 China</option>
+                                <option value="kr">🇰🇷 South Korea</option>
+                                <option value="jp">🇯🇵 Japan</option>
+                                <option value="th">🇹🇭 Thailand</option>
+                                <option value="my">🇲🇾 Malaysia</option>
+                                <option value="ph">🇵🇭 Philippines</option>
+                                <option value="id">🇮🇩 Indonesia</option>
+                                <option value="ae">🇦🇪 UAE</option>
+                                <option value="sa">🇸🇦 Saudi Arabia</option>
+                                <option value="qa">🇶🇦 Qatar</option>
+                                <option value="tr">🇹🇷 Turkey</option>
+                                <option value="de">🇩🇪 Germany</option>
+                                <option value="fr">🇫🇷 France</option>
+                                <option value="other">🌍 Other/Add Country</option>
+                            </select>
                         </div>
+                        
                         <div class="form-group">
-                            <label for="teacherName">👩‍🏫 Teacher/Facilitator's Name</label>
-                            <input type="text" id="teacherName" class="form-control" placeholder="Enter teacher's full name">
+                            <label for="globalCalendarSystem">📊 Calendar System</label>
+                            <select id="globalCalendarSystem" class="form-control" onchange="updateGlobalCalendarSystem()">
+                                <option value="quarterly">Quarterly (4 periods)</option>
+                                <option value="semester">Semester (2 periods)</option>
+                                <option value="trimester">Trimester (3 periods)</option>
+                                <option value="monthly">Monthly (12 periods)</option>
+                            </select>
                         </div>
+                        
+                        <div class="form-group">
+                            <label for="globalSchoolYearStart">🗓️ School Year Start</label>
+                            <input type="month" id="globalSchoolYearStart" class="form-control" onchange="updateAcademicYearFromStart(); updateGlobalCalendarSystem();">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="globalAcademicYear">📚 Academic Year</label>
+                            <select id="globalAcademicYear" class="form-control">
+                                <option value="2024-2025">2024-2025</option>
+                                <option value="2025-2026">2025-2026</option>
+                                <option value="2026-2027">2026-2027</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="globalGradeLevel">🎓 Grade Level</label>
+                            <select id="globalGradeLevel" class="form-control">
+                                <option value="">Select Grade</option>
+                                <option value="k">Kindergarten</option>
+                                <option value="1">Grade 1</option>
+                                <option value="2">Grade 2</option>
+                                <option value="3">Grade 3</option>
+                                <option value="4">Grade 4</option>
+                                <option value="5">Grade 5</option>
+                                <option value="6">Grade 6</option>
+                                <option value="7">Grade 7</option>
+                                <option value="8">Grade 8</option>
+                                <option value="9">Grade 9</option>
+                                <option value="10">Grade 10</option>
+                                <option value="11">Grade 11</option>
+                                <option value="12">Grade 12</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="globalInterfaceLanguage">🌐 Interface Language</label>
+                            <select id="globalInterfaceLanguage" class="form-control">
+                                <option value="en">English</option>
+                                <option value="es">Español</option>
+                                <option value="fr">Français</option>
+                                <option value="de">Deutsch</option>
+                                <option value="zh">中文</option>
+                                <option value="ja">日本語</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Curriculum Information Display -->
+                    <div id="globalCurriculumInfo" style="padding: 16px; background: #f0f9ff; border-radius: 12px; border-left: 4px solid #0ea5e9; display: none;">
+                        <h4 style="margin-bottom: 8px; color: #0c4a6e;">📋 Curriculum Standards</h4>
+                        <p id="globalCurriculumStandards" style="margin: 0; color: #0369a1; font-weight: 500;"></p>
                     </div>
                 </div>
                 
@@ -523,13 +629,13 @@
                 <!-- Subject-Wise View -->
                 <div id="subject-wise" class="planner-view active">
                     <div style="background: white; border-radius: 16px; padding: 24px; border: 2px solid #e5e7eb; margin-bottom: 20px;">
-                        <h3 style="margin-bottom: 20px; color: #1f2937;">Subject Planning Configuration</h3>
+                        <h3 style="margin-bottom: 20px; color: #1f2937;">Subject Focus Planning</h3>
                         
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: 20px;">
                             <div class="form-group">
-                                <label for="subjectSelect">Subject</label>
+                                <label for="subjectSelect">📚 Select Subject to Plan</label>
                                 <select id="subjectSelect" class="form-control">
-                                    <option value="">Select Subject</option>
+                                    <option value="">Choose a subject to focus on</option>
                                     <option value="mathematics">🔢 Mathematics</option>
                                     <option value="science">🔬 Science</option>
                                     <option value="english">📝 English</option>
@@ -540,42 +646,16 @@
                             </div>
                             
                             <div class="form-group">
-                                <label for="gradeLevel">Grade Level</label>
-                                <select id="gradeLevel" class="form-control">
-                                    <option value="">Select Grade</option>
-                                    <option value="k">Kindergarten</option>
-                                    <option value="1">Grade 1</option>
-                                    <option value="2">Grade 2</option>
-                                    <option value="3">Grade 3</option>
-                                    <option value="4">Grade 4</option>
-                                    <option value="5">Grade 5</option>
-                                    <option value="6">Grade 6</option>
-                                    <option value="7">Grade 7</option>
-                                    <option value="8">Grade 8</option>
-                                    <option value="9">Grade 9</option>
-                                    <option value="10">Grade 10</option>
-                                    <option value="11">Grade 11</option>
-                                    <option value="12">Grade 12</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="schoolYearStart">School Year Start</label>
-                                <input type="month" id="schoolYearStart" class="form-control">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="calendarSystem">Calendar System</label>
-                                <select id="calendarSystem" class="form-control" onchange="updateCalendarTable()">
-                                    <option value="quarterly">Quarterly (4 periods)</option>
-                                    <option value="semester">Semester (2 periods)</option>
-                                    <option value="trimester">Trimester (3 periods)</option>
-                                    <option value="monthly">Monthly (12 periods)</option>
+                                <label for="subjectFocus">🎯 Planning Focus</label>
+                                <select id="subjectFocus" class="form-control">
+                                    <option value="unit">Single Unit/Topic</option>
+                                    <option value="semester">Full Semester</option>
+                                    <option value="year">Entire Academic Year</option>
                                 </select>
                             </div>
                         </div>
                         
-                        <button class="btn" onclick="generateSubjectPlan()">🔄 Generate Subject Plan</button>
+                        <button class="btn" onclick="generateSubjectPlan()">🔄 Generate Subject-Focused Plan</button>
                     </div>
 
                     <!-- Monthly Planning Table -->
@@ -586,6 +666,7 @@
                                 <thead>
                                     <tr style="background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #1d4ed8 100%);">
                                         <th style="padding: 12px; border: 1px solid #1e40af; font-weight: 600; color: white;">Time Period</th>
+                                        <th style="padding: 12px; border: 1px solid #1e40af; font-weight: 600; color: white;">Months</th>
                                         <th style="padding: 12px; border: 1px solid #1e40af; font-weight: 600; color: white;">Learning Objectives</th>
                                         <th style="padding: 12px; border: 1px solid #1e40af; font-weight: 600; color: white;">Key Concepts & Topics</th>
                                         <th style="padding: 12px; border: 1px solid #1e40af; font-weight: 600; color: white;">Skills & Competencies</th>
@@ -600,7 +681,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <button class="btn" onclick="addMonthlyRow()" style="margin-top: 16px;">➕ Add Month</button>
+                        <button class="btn" onclick="addMonthlyRow()" style="margin-top: 16px;">➕ Add Period</button>
                     </div>
 
                     <!-- Additional Planning Sections -->
@@ -636,12 +717,12 @@
                 <!-- Period-Wise View -->
                 <div id="period-wise" class="planner-view">
                     <div style="background: white; border-radius: 16px; padding: 24px; border: 2px solid #e5e7eb; margin-bottom: 20px;">
-                        <h3 style="margin-bottom: 20px; color: #1f2937;">Period Planning Configuration</h3>
+                        <h3 style="margin-bottom: 20px; color: #1f2937;">Multi-Subject Period Planning</h3>
                         
-                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: 20px;">
                             <div class="form-group">
-                                <label for="quarterSelect" id="periodLabel">Quarter/Period</label>
-                                <select id="quarterSelect" class="form-control">
+                                <label for="periodSelect" id="periodLabel">📅 Select Period to Plan</label>
+                                <select id="periodSelect" class="form-control">
                                     <option value="q1">Quarter 1 (Sep-Nov)</option>
                                     <option value="q2">Quarter 2 (Dec-Feb)</option>
                                     <option value="q3">Quarter 3 (Mar-May)</option>
@@ -650,61 +731,16 @@
                             </div>
                             
                             <div class="form-group">
-                                <label for="academicYear">Academic Year</label>
-                                <select id="academicYear" class="form-control">
-                                    <option value="2024-2025">2024-2025</option>
-                                    <option value="2025-2026">2025-2026</option>
-                                    <option value="2026-2027">2026-2027</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="countryRegion">Country/Region</label>
-                                <select id="countryRegion" class="form-control" onchange="updateCountryBasedOptions()">
-                                    <option value="us">🇺🇸 United States</option>
-                                    <option value="uk">🇬🇧 United Kingdom</option>
-                                    <option value="ca">🇨🇦 Canada</option>
-                                    <option value="au">🇦🇺 Australia</option>
-                                    <option value="nz">🇳🇿 New Zealand</option>
-                                    <option value="sg">🇸🇬 Singapore</option>
-                                    <option value="in">🇮🇳 India</option>
-                                    <option value="cn">🇨🇳 China</option>
-                                    <option value="kr">🇰🇷 South Korea</option>
-                                    <option value="jp">🇯🇵 Japan</option>
-                                    <option value="th">🇹🇭 Thailand</option>
-                                    <option value="my">🇲🇾 Malaysia</option>
-                                    <option value="ph">🇵🇭 Philippines</option>
-                                    <option value="id">🇮🇩 Indonesia</option>
-                                    <option value="ae">🇦🇪 UAE</option>
-                                    <option value="sa">🇸🇦 Saudi Arabia</option>
-                                    <option value="qa">🇶🇦 Qatar</option>
-                                    <option value="tr">🇹🇷 Turkey</option>
-                                    <option value="de">🇩🇪 Germany</option>
-                                    <option value="fr">🇫🇷 France</option>
-                                    <option value="other">🌍 Other/Add Country</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="interfaceLanguage">Interface Language</label>
-                                <select id="interfaceLanguage" class="form-control">
-                                    <option value="en">English</option>
-                                    <option value="es">Español</option>
-                                    <option value="fr">Français</option>
-                                    <option value="de">Deutsch</option>
-                                    <option value="zh">中文</option>
-                                    <option value="ja">日本語</option>
+                                <label for="planningScope">🎯 Planning Scope</label>
+                                <select id="planningScope" class="form-control">
+                                    <option value="all">All Subjects</option>
+                                    <option value="core">Core Subjects Only</option>
+                                    <option value="selected">Selected Subjects</option>
                                 </select>
                             </div>
                         </div>
                         
-                        <button class="btn" onclick="generatePeriodPlan()">🔄 Generate Period Plan</button>
-                        
-                        <!-- Curriculum Information Display -->
-                        <div id="curriculumInfo" style="margin-top: 16px; padding: 16px; background: #f0f9ff; border-radius: 12px; border-left: 4px solid #0ea5e9; display: none;">
-                            <h4 style="margin-bottom: 8px; color: #0c4a6e;">📋 Curriculum Standards</h4>
-                            <p id="curriculumStandards" style="margin: 0; color: #0369a1; font-weight: 500;"></p>
-                        </div>
+                        <button class="btn" onclick="generatePeriodPlan()">🔄 Generate Multi-Subject Plan</button>
                     </div>
 
                     <!-- Weekly Planning Table -->
@@ -745,11 +781,16 @@
                 <h2 style="margin-bottom: 20px; color: #1f2937;">Daily Schedule Template</h2>
                 
                 <div style="background: white; border-radius: 16px; padding: 24px; border: 2px solid #e5e7eb; margin-bottom: 20px;">
-                    <h3 style="margin-bottom: 16px; color: #1f2937;">📅 Schedule Configuration</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h3 style="margin: 0; color: #1f2937;">📅 Schedule Configuration</h3>
+                        <button class="btn btn-secondary" onclick="showWeeklyView()" style="background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);">
+                            📅 View Full Week
+                        </button>
+                    </div>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px;">
                         <div class="form-group">
                             <label for="scheduleDay">Day of Week</label>
-                            <select id="scheduleDay" class="form-control">
+                            <select id="scheduleDay" class="form-control" onchange="updateDaySchedule()">
                                 <option value="monday">Monday</option>
                                 <option value="tuesday">Tuesday</option>
                                 <option value="wednesday">Wednesday</option>
@@ -787,7 +828,6 @@
                                     <th style="padding: 12px; border: 1px solid #92400e; font-weight: 600; color: white; min-width: 200px;">Learning Objectives</th>
                                     <th style="padding: 12px; border: 1px solid #92400e; font-weight: 600; color: white; min-width: 200px;">Activities & Tasks</th>
                                     <th style="padding: 12px; border: 1px solid #92400e; font-weight: 600; color: white; min-width: 150px;">Materials Needed</th>
-                                    <th style="padding: 12px; border: 1px solid #92400e; font-weight: 600; color: white; min-width: 100px;">Duration</th>
                                     <th style="padding: 12px; border: 1px solid #92400e; font-weight: 600; color: white; min-width: 120px;">Notes</th>
                                 </tr>
                             </thead>
@@ -860,6 +900,37 @@
                     <button type="submit" class="btn">Add Subject</button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Weekly Schedule Modal -->
+    <div id="weeklyScheduleModal" class="modal">
+        <div class="modal-content" style="max-width: 95%; max-height: 90vh;">
+            <button class="close-modal" onclick="closeModal('weeklyScheduleModal')">&times;</button>
+            <h3 style="margin-bottom: 20px; color: #1f2937;">📅 Weekly Schedule Overview</h3>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
+                    <thead>
+                        <tr style="background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);">
+                            <th style="padding: 12px; border: 1px solid #7c3aed; font-weight: 600; color: white; min-width: 100px;">Time</th>
+                            <th style="padding: 12px; border: 1px solid #7c3aed; font-weight: 600; color: white; min-width: 120px;">Monday</th>
+                            <th style="padding: 12px; border: 1px solid #7c3aed; font-weight: 600; color: white; min-width: 120px;">Tuesday</th>
+                            <th style="padding: 12px; border: 1px solid #7c3aed; font-weight: 600; color: white; min-width: 120px;">Wednesday</th>
+                            <th style="padding: 12px; border: 1px solid #7c3aed; font-weight: 600; color: white; min-width: 120px;">Thursday</th>
+                            <th style="padding: 12px; border: 1px solid #7c3aed; font-weight: 600; color: white; min-width: 120px;">Friday</th>
+                            <th style="padding: 12px; border: 1px solid #7c3aed; font-weight: 600; color: white; min-width: 120px;">Saturday</th>
+                            <th style="padding: 12px; border: 1px solid #7c3aed; font-weight: 600; color: white; min-width: 120px;">Sunday</th>
+                        </tr>
+                    </thead>
+                    <tbody id="weeklyScheduleTable">
+                        <!-- Weekly schedule will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+            <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: flex-end;">
+                <button class="btn btn-secondary" onclick="exportWeeklySchedule()">📄 Export Weekly Schedule</button>
+                <button class="btn" onclick="closeModal('weeklyScheduleModal')">Close</button>
+            </div>
         </div>
     </div>
 
@@ -1218,51 +1289,76 @@
             }
         }
 
-        // Update calendar table based on selected system
+        // Update calendar table based on global settings
         function updateCalendarTable() {
-            const calendarSystem = document.getElementById('calendarSystem').value;
+            const calendarSystem = document.getElementById('globalCalendarSystem').value;
             const config = calendarConfigs[calendarSystem];
             
             if (!config) return;
             
             // Clear existing table
             const tableBody = document.getElementById('monthlyPlanTable');
+            if (!tableBody) return;
+            
             tableBody.innerHTML = '';
             
             // Update weekly table headers based on calendar system
             updateWeeklyTableHeaders(calendarSystem);
             
+            // Get school year start month from global settings
+            const schoolYearStart = document.getElementById('globalSchoolYearStart').value;
+            let startMonth = 8; // Default to September (month 8)
+            if (schoolYearStart) {
+                startMonth = parseInt(schoolYearStart.split('-')[1]) - 1; // Convert to 0-based month
+            }
+            
+            const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+            
             // Add rows based on calendar system with detailed month breakdowns
             for (let i = 1; i <= config.periods; i++) {
                 let periodName = '';
+                let months = '';
                 
                 if (calendarSystem === 'quarterly') {
-                    const quarterMonths = [
-                        'Quarter 1 (September - November)',
-                        'Quarter 2 (December - February)', 
-                        'Quarter 3 (March - May)',
-                        'Quarter 4 (June - August)'
-                    ];
-                    periodName = quarterMonths[i - 1] || `Quarter ${i}`;
+                    periodName = `Quarter ${i}`;
+                    // Calculate months for each quarter based on start month
+                    const quarterStartMonth = (startMonth + (i - 1) * 3) % 12;
+                    const month1 = monthNames[quarterStartMonth];
+                    const month2 = monthNames[(quarterStartMonth + 1) % 12];
+                    const month3 = monthNames[(quarterStartMonth + 2) % 12];
+                    months = `${month1}, ${month2}, ${month3}`;
                 } else if (calendarSystem === 'semester') {
-                    const semesterMonths = [
-                        'Semester 1 (September - February)',
-                        'Semester 2 (March - August)'
-                    ];
-                    periodName = semesterMonths[i - 1] || `Semester ${i}`;
+                    periodName = `Semester ${i}`;
+                    if (i === 1) {
+                        const semesterStartMonth = startMonth;
+                        const monthsInSemester = [];
+                        for (let j = 0; j < 6; j++) {
+                            monthsInSemester.push(monthNames[(semesterStartMonth + j) % 12]);
+                        }
+                        months = monthsInSemester.join(', ');
+                    } else {
+                        const semesterStartMonth = (startMonth + 6) % 12;
+                        const monthsInSemester = [];
+                        for (let j = 0; j < 6; j++) {
+                            monthsInSemester.push(monthNames[(semesterStartMonth + j) % 12]);
+                        }
+                        months = monthsInSemester.join(', ');
+                    }
                 } else if (calendarSystem === 'trimester') {
-                    const trimesterMonths = [
-                        'Trimester 1 (September - December)',
-                        'Trimester 2 (January - April)',
-                        'Trimester 3 (May - August)'
-                    ];
-                    periodName = trimesterMonths[i - 1] || `Trimester ${i}`;
+                    periodName = `Trimester ${i}`;
+                    const trimesterStartMonth = (startMonth + (i - 1) * 4) % 12;
+                    const month1 = monthNames[trimesterStartMonth];
+                    const month2 = monthNames[(trimesterStartMonth + 1) % 12];
+                    const month3 = monthNames[(trimesterStartMonth + 2) % 12];
+                    const month4 = monthNames[(trimesterStartMonth + 3) % 12];
+                    months = `${month1}, ${month2}, ${month3}, ${month4}`;
                 } else if (calendarSystem === 'monthly') {
-                    const months = ['September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August'];
-                    periodName = months[i - 1] || `Month ${i}`;
+                    const monthIndex = (startMonth + i - 1) % 12;
+                    periodName = monthNames[monthIndex];
+                    months = monthNames[monthIndex];
                 }
                 
-                addMonthlyRow(periodName);
+                addMonthlyRow(periodName, months);
             }
         }
 
@@ -1288,19 +1384,15 @@
             }
         }
 
-        // Update country-based options
-        function updateCountryBasedOptions() {
-            const country = document.getElementById('countryRegion').value;
+        // Global calendar configuration functions
+        function updateGlobalCountrySettings() {
+            const country = document.getElementById('globalCountryRegion').value;
             const curriculum = globalCurricula[country];
             
             if (!curriculum) return;
             
-            // Update period label and options
-            const periodLabel = document.getElementById('periodLabel');
-            const quarterSelect = document.getElementById('quarterSelect');
-            
-            // Update calendar system options based on country
-            const calendarSelect = document.getElementById('calendarSystem');
+            // Update global calendar system options based on country
+            const calendarSelect = document.getElementById('globalCalendarSystem');
             calendarSelect.innerHTML = '';
             
             curriculum.calendarSystems.forEach(system => {
@@ -1313,13 +1405,138 @@
                 }
             });
             
-            // Update period dropdown based on first calendar system
-            if (curriculum.calendarSystems.length > 0) {
-                updatePeriodDropdown(curriculum.calendarSystems[0]);
+            // Set default to quarterly for Philippines
+            if (country === 'ph') {
+                calendarSelect.value = 'quarterly';
             }
             
-            // Show curriculum info
-            showCurriculumInfo(curriculum);
+            // Update period dropdown based on first calendar system
+            if (curriculum.calendarSystems.length > 0) {
+                const selectedSystem = country === 'ph' ? 'quarterly' : curriculum.calendarSystems[0];
+                updateGlobalPeriodDropdown(selectedSystem);
+            }
+            
+            // Show global curriculum info
+            showGlobalCurriculumInfo(curriculum);
+            
+            // Update calendar table with new system
+            updateCalendarTable();
+            
+            // Sync to individual view dropdowns
+            syncToIndividualViews();
+        }
+
+        function updateAcademicYearFromStart() {
+            const schoolYearStart = document.getElementById('globalSchoolYearStart').value;
+            const academicYearSelect = document.getElementById('globalAcademicYear');
+            
+            if (!schoolYearStart) return;
+            
+            const startYear = parseInt(schoolYearStart.split('-')[0]);
+            const startMonth = parseInt(schoolYearStart.split('-')[1]);
+            
+            // Academic year spans two calendar years if it starts in August or later
+            let academicYear;
+            if (startMonth >= 8) {
+                academicYear = `${startYear}-${startYear + 1}`;
+            } else {
+                academicYear = `${startYear - 1}-${startYear}`;
+            }
+            
+            // Update the academic year dropdown
+            academicYearSelect.innerHTML = '';
+            for (let i = -1; i <= 2; i++) {
+                const year = startYear + i;
+                const yearOption = startMonth >= 8 ? `${year}-${year + 1}` : `${year - 1}-${year}`;
+                const option = document.createElement('option');
+                option.value = yearOption;
+                option.textContent = yearOption;
+                if (yearOption === academicYear) {
+                    option.selected = true;
+                }
+                academicYearSelect.appendChild(option);
+            }
+            
+            // Update header info
+            updateHeaderInfo();
+        }
+
+        function updateGlobalCalendarSystem() {
+            const calendarSystem = document.getElementById('globalCalendarSystem').value;
+            const config = calendarConfigs[calendarSystem];
+            
+            if (!config) return;
+            
+            // Update period dropdown
+            updateGlobalPeriodDropdown(calendarSystem);
+            
+            // Update calendar table
+            updateCalendarTable();
+            
+            // Update academic year based on school year start
+            updateAcademicYearFromStart();
+            
+            // Sync to individual views
+            syncToIndividualViews();
+        }
+
+        function updateGlobalPeriodDropdown(calendarSystem) {
+            const config = calendarConfigs[calendarSystem];
+            const periodSelect = document.getElementById('periodSelect');
+            const periodLabel = document.getElementById('periodLabel');
+            
+            if (!config || !periodSelect) return;
+            
+            periodLabel.textContent = `📅 Select ${config.name} to Plan`;
+            periodSelect.innerHTML = '';
+            
+            for (let i = 1; i <= config.periods; i++) {
+                const option = document.createElement('option');
+                option.value = `p${i}`;
+                option.textContent = `${config.name} ${i}`;
+                periodSelect.appendChild(option);
+            }
+        }
+
+        function showGlobalCurriculumInfo(curriculum) {
+            const infoDiv = document.getElementById('globalCurriculumInfo');
+            const standardsP = document.getElementById('globalCurriculumStandards');
+            
+            if (infoDiv && standardsP) {
+                standardsP.textContent = `${curriculum.name} - ${curriculum.standards}`;
+                infoDiv.style.display = 'block';
+            }
+        }
+
+        function syncToIndividualViews() {
+            // Sync global settings to individual view elements
+            const globalCountry = document.getElementById('globalCountryRegion').value;
+            const globalCalendar = document.getElementById('globalCalendarSystem').value;
+            const globalYear = document.getElementById('globalAcademicYear').value;
+            const globalGrade = document.getElementById('globalGradeLevel').value;
+            const globalYearStart = document.getElementById('globalSchoolYearStart').value;
+            
+            // Update subject-wise view elements if they exist
+            const gradeLevel = document.getElementById('gradeLevel');
+            const schoolYearStart = document.getElementById('schoolYearStart');
+            const calendarSystem = document.getElementById('calendarSystem');
+            
+            if (gradeLevel) gradeLevel.value = globalGrade;
+            if (schoolYearStart) schoolYearStart.value = globalYearStart;
+            if (calendarSystem) calendarSystem.value = globalCalendar;
+            
+            // Update period-wise view elements if they exist
+            const countryRegion = document.getElementById('countryRegion');
+            const academicYear = document.getElementById('academicYear');
+            
+            if (countryRegion) countryRegion.value = globalCountry;
+            if (academicYear) academicYear.value = globalYear;
+        }
+
+        // Update country-based options (legacy function for compatibility)
+        function updateCountryBasedOptions() {
+            // This function is now handled by the global configuration
+            console.log('Using global country configuration');
         }
 
         // Update period dropdown based on calendar system
@@ -1457,34 +1674,52 @@
             }
         }
 
-        function addMonthlyRow(timePeriod = '') {
+        function addMonthlyRow(timePeriod = '', months = '') {
             const tableBody = document.getElementById('monthlyPlanTable');
             const row = document.createElement('tr');
             
+            // Create month lines based on the months string - single line per month
+            let monthLines = '';
+            if (months) {
+                const monthArray = months.split(', ');
+                monthLines = monthArray.map(month => `<div style="padding: 6px 0; border-bottom: 1px solid #e5e7eb; min-height: 24px; font-size: 0.85rem;">${month.trim()}</div>`).join('');
+            } else {
+                monthLines = '<div style="padding: 6px 0; border-bottom: 1px solid #e5e7eb; min-height: 24px; font-size: 0.85rem;">Month 1</div><div style="padding: 6px 0; border-bottom: 1px solid #e5e7eb; min-height: 24px; font-size: 0.85rem;">Month 2</div><div style="padding: 6px 0; min-height: 24px; font-size: 0.85rem;">Month 3</div>';
+            }
+            
+            // Calculate row height based on number of months
+            const monthCount = months ? months.split(', ').length : 3;
+            const rowHeight = Math.max(120, monthCount * 32);
+            
             row.innerHTML = `
-                <td style="padding: 8px; border: 1px solid #e5e7eb;">
-                    <input type="text" value="${timePeriod}" placeholder="Month/Period" style="width: 100%; border: none; background: transparent; padding: 4px;">
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top;">
+                    <input type="text" value="${timePeriod}" placeholder="Quarter/Period" style="width: 100%; border: none; background: transparent; padding: 4px; font-weight: 600;">
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb;">
-                    <textarea placeholder="Learning objectives..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 60px; padding: 4px;"></textarea>
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; min-width: 120px;">
+                    <div style="color: #3b82f6; font-weight: 500;">
+                        ${monthLines}
+                    </div>
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb;">
-                    <textarea placeholder="Key concepts and topics..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 60px; padding: 4px;"></textarea>
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top;">
+                    <textarea placeholder="Learning objectives..." style="width: 100%; border: none; background: transparent; resize: vertical; height: ${rowHeight}px; padding: 4px; font-size: 0.9rem;"></textarea>
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb;">
-                    <textarea placeholder="Skills and competencies..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 60px; padding: 4px;"></textarea>
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top;">
+                    <textarea placeholder="Key concepts and topics..." style="width: 100%; border: none; background: transparent; resize: vertical; height: ${rowHeight}px; padding: 4px; font-size: 0.9rem;"></textarea>
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb;">
-                    <textarea placeholder="Assessment methods..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 60px; padding: 4px;"></textarea>
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top;">
+                    <textarea placeholder="Skills and competencies..." style="width: 100%; border: none; background: transparent; resize: vertical; height: ${rowHeight}px; padding: 4px; font-size: 0.9rem;"></textarea>
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb;">
-                    <textarea placeholder="Learning activities..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 60px; padding: 4px;"></textarea>
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top;">
+                    <textarea placeholder="Assessment methods..." style="width: 100%; border: none; background: transparent; resize: vertical; height: ${rowHeight}px; padding: 4px; font-size: 0.9rem;"></textarea>
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb;">
-                    <textarea placeholder="Resources and materials..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 60px; padding: 4px;"></textarea>
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top;">
+                    <textarea placeholder="Learning activities..." style="width: 100%; border: none; background: transparent; resize: vertical; height: ${rowHeight}px; padding: 4px; font-size: 0.9rem;"></textarea>
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb;">
-                    <textarea placeholder="Standard alignments..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 60px; padding: 4px;"></textarea>
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top;">
+                    <textarea placeholder="Resources and materials..." style="width: 100%; border: none; background: transparent; resize: vertical; height: ${rowHeight}px; padding: 4px; font-size: 0.9rem;"></textarea>
+                </td>
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top;">
+                    <textarea placeholder="Standard alignments..." style="width: 100%; border: none; background: transparent; resize: vertical; height: ${rowHeight}px; padding: 4px; font-size: 0.9rem;"></textarea>
                 </td>
             `;
             
@@ -1610,16 +1845,42 @@
 
         function loadMilestones() {
             const container = document.getElementById('milestones');
-            const milestones = [
-                { title: 'First Month Complete', description: 'Completed your first month of homeschooling!', achieved: true },
-                { title: 'Math Mastery', description: 'Achieved 80% progress in Mathematics', achieved: false },
-                { title: 'Science Explorer', description: 'Completed 10 science experiments', achieved: true },
-                { title: 'Reading Champion', description: 'Read 5 books this semester', achieved: false }
-            ];
+            
+            // Get milestones from localStorage or use defaults
+            let milestones = JSON.parse(localStorage.getItem('eduflow_milestones') || '[]');
+            
+            if (milestones.length === 0) {
+                milestones = [
+                    { id: 1, title: 'First Week Complete', description: 'Complete your first week of curriculum planning', achieved: false, target: 7, current: 0, type: 'days' },
+                    { id: 2, title: 'Subject Master', description: 'Add 5 subjects to your curriculum', achieved: false, target: 5, current: subjects.length, type: 'subjects' },
+                    { id: 3, title: 'Planning Pro', description: 'Complete monthly planning for one quarter', achieved: false, target: 1, current: 0, type: 'quarters' },
+                    { id: 4, title: 'Schedule Setter', description: 'Create a full daily schedule template', achieved: false, target: 1, current: 0, type: 'schedules' }
+                ];
+            }
+            
+            // Update current progress for dynamic milestones
+            milestones.forEach(milestone => {
+                if (milestone.type === 'subjects') {
+                    milestone.current = subjects.length;
+                    milestone.achieved = milestone.current >= milestone.target;
+                }
+            });
             
             container.innerHTML = '';
             
+            // Add milestone management header
+            const headerDiv = document.createElement('div');
+            headerDiv.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;';
+            headerDiv.innerHTML = `
+                <h4 style="margin: 0; color: #374151;">Your Learning Milestones</h4>
+                <button class="btn" onclick="addCustomMilestone()" style="padding: 8px 16px; font-size: 0.9rem;">
+                    ➕ Add Milestone
+                </button>
+            `;
+            container.appendChild(headerDiv);
+            
             milestones.forEach(milestone => {
+                const progressPercent = Math.min(100, (milestone.current / milestone.target) * 100);
                 const milestoneDiv = document.createElement('div');
                 milestoneDiv.style.cssText = `
                     padding: 16px; 
@@ -1629,16 +1890,74 @@
                     border-left: 4px solid ${milestone.achieved ? '#22c55e' : '#d1d5db'};
                 `;
                 milestoneDiv.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 12px;">
-                        <span style="font-size: 1.5rem;">${milestone.achieved ? '🏆' : '⏳'}</span>
-                        <div>
-                            <h4 style="margin-bottom: 4px; color: #374151;">${milestone.title}</h4>
-                            <p style="color: #6b7280; margin: 0;">${milestone.description}</p>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+                        <div style="display: flex; align-items: center; gap: 12px; flex: 1;">
+                            <span style="font-size: 1.5rem;">${milestone.achieved ? '🏆' : '⏳'}</span>
+                            <div style="flex: 1;">
+                                <h4 style="margin-bottom: 4px; color: #374151;">${milestone.title}</h4>
+                                <p style="color: #6b7280; margin: 0 0 8px 0;">${milestone.description}</p>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <div style="flex: 1; background: #e5e7eb; height: 6px; border-radius: 3px; overflow: hidden;">
+                                        <div style="width: ${progressPercent}%; height: 100%; background: ${milestone.achieved ? '#22c55e' : '#3b82f6'}; transition: width 0.3s ease;"></div>
+                                    </div>
+                                    <span style="font-size: 0.8rem; color: #6b7280; font-weight: 600;">${milestone.current}/${milestone.target}</span>
+                                </div>
+                            </div>
                         </div>
+                        <button onclick="deleteMilestone(${milestone.id})" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 4px; font-size: 1.2rem;" title="Delete milestone">🗑️</button>
                     </div>
                 `;
                 container.appendChild(milestoneDiv);
             });
+            
+            // Save updated milestones
+            localStorage.setItem('eduflow_milestones', JSON.stringify(milestones));
+        }
+
+        function addCustomMilestone() {
+            const title = prompt('Enter milestone title:');
+            if (!title) return;
+            
+            const description = prompt('Enter milestone description:');
+            if (!description) return;
+            
+            const target = parseInt(prompt('Enter target number:'));
+            if (!target || target <= 0) return;
+            
+            const milestones = JSON.parse(localStorage.getItem('eduflow_milestones') || '[]');
+            const newMilestone = {
+                id: Date.now(),
+                title,
+                description,
+                achieved: false,
+                target,
+                current: 0,
+                type: 'custom'
+            };
+            
+            milestones.push(newMilestone);
+            localStorage.setItem('eduflow_milestones', JSON.stringify(milestones));
+            loadMilestones();
+        }
+
+        function deleteMilestone(id) {
+            if (confirm('Are you sure you want to delete this milestone?')) {
+                let milestones = JSON.parse(localStorage.getItem('eduflow_milestones') || '[]');
+                milestones = milestones.filter(m => m.id !== id);
+                localStorage.setItem('eduflow_milestones', JSON.stringify(milestones));
+                loadMilestones();
+            }
+        }
+
+        function updateMilestoneProgress(type, increment = 1) {
+            let milestones = JSON.parse(localStorage.getItem('eduflow_milestones') || '[]');
+            milestones.forEach(milestone => {
+                if (milestone.type === type && !milestone.achieved) {
+                    milestone.current = Math.min(milestone.target, milestone.current + increment);
+                    milestone.achieved = milestone.current >= milestone.target;
+                }
+            });
+            localStorage.setItem('eduflow_milestones', JSON.stringify(milestones));
         }
 
         function updateOverviewStats() {
@@ -1724,10 +2043,10 @@
             
             row.innerHTML = `
                 <td style="padding: 8px; border: 1px solid #e5e7eb;">
-                    <input type="text" value="${timeSlot}" placeholder="Time slot" style="width: 100%; border: none; background: transparent; padding: 4px; font-weight: 600;">
+                    <input type="text" value="${timeSlot}" placeholder="Time slot" style="width: 100%; border: none; background: transparent; padding: 4px; font-weight: 600;" onchange="updateWeeklyFromDaily()">
                 </td>
                 <td style="padding: 8px; border: 1px solid #e5e7eb;">
-                    <select style="width: 100%; border: none; background: transparent; padding: 4px;">
+                    <select style="width: 100%; border: none; background: transparent; padding: 4px;" onchange="updateWeeklyFromDaily()">
                         <option value="">Select Subject</option>
                         <option value="mathematics">🔢 Mathematics</option>
                         <option value="science">🔬 Science</option>
@@ -1742,42 +2061,134 @@
                     </select>
                 </td>
                 <td style="padding: 8px; border: 1px solid #e5e7eb;">
-                    <textarea placeholder="Learning objectives for this time slot..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 50px; padding: 4px;"></textarea>
+                    <textarea placeholder="Learning objectives for this time slot..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 50px; padding: 4px;" onchange="updateWeeklyFromDaily()"></textarea>
                 </td>
                 <td style="padding: 8px; border: 1px solid #e5e7eb;">
-                    <textarea placeholder="Activities and tasks..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 50px; padding: 4px;"></textarea>
+                    <textarea placeholder="Activities and tasks..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 50px; padding: 4px;" onchange="updateWeeklyFromDaily()"></textarea>
                 </td>
                 <td style="padding: 8px; border: 1px solid #e5e7eb;">
-                    <textarea placeholder="Materials needed..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 50px; padding: 4px;"></textarea>
+                    <textarea placeholder="Materials needed..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 50px; padding: 4px;" onchange="updateWeeklyFromDaily()"></textarea>
                 </td>
                 <td style="padding: 8px; border: 1px solid #e5e7eb;">
-                    <input type="text" placeholder="Duration" style="width: 100%; border: none; background: transparent; padding: 4px;">
-                </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb;">
-                    <textarea placeholder="Notes..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 50px; padding: 4px;"></textarea>
+                    <textarea placeholder="Notes..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 50px; padding: 4px;" onchange="updateWeeklyFromDaily()"></textarea>
                 </td>
             `;
             
             tableBody.appendChild(row);
         }
 
+        // Weekly schedule functions
+        function showWeeklyView() {
+            openModal('weeklyScheduleModal');
+            generateWeeklySchedule();
+        }
+
+        function updateWeeklyFromDaily() {
+            // This function syncs daily schedule changes to the weekly view
+            console.log('Daily schedule updated - weekly view will reflect changes when opened');
+            // In a full implementation, this would update the weekly schedule data structure
+        }
+
+        function generateWeeklySchedule() {
+            const tableBody = document.getElementById('weeklyScheduleTable');
+            tableBody.innerHTML = '';
+            
+            const timeSlots = [
+                '8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', 
+                '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM'
+            ];
+            
+            timeSlots.forEach(time => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td style="padding: 8px; border: 1px solid #e5e7eb; font-weight: 600; background: #f8fafc;">${time}</td>
+                    <td style="padding: 8px; border: 1px solid #e5e7eb;"><input type="text" placeholder="Subject/Activity" style="width: 100%; border: none; background: transparent; padding: 4px;"></td>
+                    <td style="padding: 8px; border: 1px solid #e5e7eb;"><input type="text" placeholder="Subject/Activity" style="width: 100%; border: none; background: transparent; padding: 4px;"></td>
+                    <td style="padding: 8px; border: 1px solid #e5e7eb;"><input type="text" placeholder="Subject/Activity" style="width: 100%; border: none; background: transparent; padding: 4px;"></td>
+                    <td style="padding: 8px; border: 1px solid #e5e7eb;"><input type="text" placeholder="Subject/Activity" style="width: 100%; border: none; background: transparent; padding: 4px;"></td>
+                    <td style="padding: 8px; border: 1px solid #e5e7eb;"><input type="text" placeholder="Subject/Activity" style="width: 100%; border: none; background: transparent; padding: 4px;"></td>
+                    <td style="padding: 8px; border: 1px solid #e5e7eb;"><input type="text" placeholder="Subject/Activity" style="width: 100%; border: none; background: transparent; padding: 4px;"></td>
+                    <td style="padding: 8px; border: 1px solid #e5e7eb;"><input type="text" placeholder="Subject/Activity" style="width: 100%; border: none; background: transparent; padding: 4px;"></td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function exportWeeklySchedule() {
+            alert('📄 Weekly Schedule Export\n\nThis would export your complete weekly schedule as a PDF or print-friendly format.\n\nNote: This is a demo feature.');
+        }
+
+        function updateDaySchedule() {
+            const selectedDay = document.getElementById('scheduleDay').value;
+            console.log(`Switched to ${selectedDay} schedule`);
+            // In a full implementation, this would load day-specific schedule data
+        }
+
+        // Update header info with participant information
+        function updateHeaderInfo() {
+            const learnerName = document.getElementById('learnerName')?.value || '';
+            const teacherName = document.getElementById('teacherName')?.value || '';
+            const gradeLevel = document.getElementById('globalGradeLevel')?.value || '';
+            const academicYear = document.getElementById('globalAcademicYear')?.value || '';
+            
+            const headerInfo = document.getElementById('headerInfo');
+            const headerLearner = document.getElementById('headerLearner');
+            const headerTeacher = document.getElementById('headerTeacher');
+            const headerGrade = document.getElementById('headerGrade');
+            const headerYear = document.getElementById('headerYear');
+            
+            // Show info display if any field has content
+            if (learnerName || teacherName || gradeLevel || academicYear) {
+                headerInfo.style.display = 'flex';
+                headerLearner.innerHTML = `👨‍🎓 Learner: <strong>${learnerName || 'Not Set'}</strong>`;
+                headerTeacher.innerHTML = `👩‍🏫 Teacher: <strong>${teacherName || 'Not Set'}</strong>`;
+                headerGrade.innerHTML = `🎓 Grade: <strong>${gradeLevel || 'Not Set'}</strong>`;
+                headerYear.innerHTML = `📅 Year: <strong>${academicYear || 'Not Set'}</strong>`;
+            } else {
+                headerInfo.style.display = 'none';
+            }
+        }
+
+        // Legacy function for compatibility
+        function updateHeaderSubtitle() {
+            updateHeaderInfo();
+        }
+
+        // Add event listeners for header updates
+        function addHeaderUpdateListeners() {
+            const fieldsToWatch = ['learnerName', 'teacherName', 'globalGradeLevel', 'globalAcademicYear', 'globalSchoolYearStart'];
+            fieldsToWatch.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.addEventListener('input', updateHeaderInfo);
+                    field.addEventListener('change', updateHeaderInfo);
+                    if (fieldId === 'globalSchoolYearStart') {
+                        field.addEventListener('change', updateAcademicYearFromStart);
+                    }
+                }
+            });
+        }
+
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
             // Initialize all interconnected data
             updateAllSections();
-            updateCountryBasedOptions();
-            updateCalendarTable();
+            addHeaderUpdateListeners();
             
             // Set default date for lesson form to today
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('lessonDate').value = today;
             document.getElementById('scheduleDate').value = today;
             
-            // Set default school year start to current September
+            // Set default school year start to current September in global settings
             const currentYear = new Date().getFullYear();
             const currentMonth = new Date().getMonth();
             const schoolYear = currentMonth >= 8 ? currentYear : currentYear - 1; // September = month 8
-            document.getElementById('schoolYearStart').value = `${schoolYear}-09`;
+            document.getElementById('globalSchoolYearStart').value = `${schoolYear}-09`;
+            
+            // Initialize global settings
+            updateGlobalCountrySettings();
+            updateGlobalCalendarSystem();
             
             // Load saved template if exists
             const savedTemplate = localStorage.getItem('eduflow_template');
@@ -1805,5 +2216,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96eaf4edf05aed48',t:'MTc1NTExNjg4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96eb676ac5657578',t:'MTc1NTEyMTU3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
