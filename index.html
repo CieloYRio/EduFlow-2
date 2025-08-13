@@ -1,0 +1,1809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduFlow Planner - Smart Curriculum Design</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            box-shadow: 0 32px 64px rgba(0,0,0,0.2), 0 0 0 1px rgba(255,255,255,0.1);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 25%, #1d4ed8 50%, #1e40af 75%, #1e3a8a 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="white" opacity="0.1"/><circle cx="75" cy="75" r="1" fill="white" opacity="0.1"/><circle cx="50" cy="10" r="0.5" fill="white" opacity="0.1"/><circle cx="20" cy="80" r="0.5" fill="white" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+            pointer-events: none;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            font-weight: 800;
+            background: linear-gradient(45deg, #ffffff, #f1f5f9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.95;
+            font-weight: 500;
+            position: relative;
+            z-index: 1;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+            padding: 8px;
+            gap: 4px;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 16px 24px;
+            text-align: center;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 12px;
+            position: relative;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: rgba(37, 99, 235, 0.1);
+            color: #2563eb;
+            transform: translateY(-1px);
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .view {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.3);
+        }
+
+        .curriculum-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .subject-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .subject-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.1);
+            border-color: #2563eb;
+        }
+
+        .subject-card h3 {
+            color: #1f2937;
+            margin-bottom: 12px;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .subject-card p {
+            color: #6b7280;
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        .progress-bar {
+            background: #f3f4f6;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2563eb, #1d4ed8);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .lesson-list {
+            list-style: none;
+            margin-top: 16px;
+        }
+
+        .lesson-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .lesson-item:last-child {
+            border-bottom: none;
+        }
+
+        .lesson-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-completed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-in-progress {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-not-started {
+            background: #f3f4f6;
+            color: #6b7280;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            text-align: center;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from { transform: scale(0.9) translateY(-20px); opacity: 0; }
+            to { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+            padding: 5px;
+        }
+
+        .close-modal:hover {
+            color: #374151;
+        }
+
+        .planner-tab {
+            flex: 1;
+            padding: 12px 20px;
+            background: none;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+
+        .planner-tab.active {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .planner-tab:hover:not(.active) {
+            background: rgba(37, 99, 235, 0.1);
+            color: #2563eb;
+        }
+
+        .planner-view {
+            display: none;
+        }
+
+        .planner-view.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .curriculum-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 EduFlow Planner</h1>
+            <p>Smart Curriculum Design for Modern Educators</p>
+        </div>
+
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="showView('overview')">📊 Overview</button>
+            <button class="nav-tab" onclick="showView('subjects')">📖 Subjects</button>
+            <button class="nav-tab" onclick="showView('planner')">📅 Planner</button>
+            <button class="nav-tab" onclick="showView('schedule')">🕐 Daily Schedule</button>
+            <button class="nav-tab" onclick="showView('progress')">📈 Progress</button>
+        </div>
+
+        <div class="content">
+            <!-- Overview View -->
+            <div id="overview" class="view active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalSubjects">6</div>
+                        <div class="stat-label">Total Subjects</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="completedLessons">0</div>
+                        <div class="stat-label">Completed Lessons</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="overallProgress">0</div>
+                        <div class="stat-label">Overall Progress %</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="weeklyHours">0</div>
+                        <div class="stat-label">Weekly Hours</div>
+                    </div>
+                </div>
+
+                <h2 style="margin-bottom: 20px; color: #1f2937;">Recent Activity</h2>
+                <div class="curriculum-grid">
+                    <div class="subject-card">
+                        <h3>🔢 Mathematics</h3>
+                        <p>Currently working on: Algebra Fundamentals</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 75%"></div>
+                        </div>
+                        <small style="color: #6b7280;">75% Complete</small>
+                    </div>
+                    <div class="subject-card">
+                        <h3>🔬 Science</h3>
+                        <p>Currently working on: Chemistry Basics</p>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: 60%"></div>
+                        </div>
+                        <small style="color: #6b7280;">60% Complete</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Subjects View -->
+            <div id="subjects" class="view">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="color: #1f2937;">Subject Management</h2>
+                    <button class="btn" onclick="openModal('addSubjectModal')">
+                        ➕ Add Subject
+                    </button>
+                </div>
+
+                <div class="curriculum-grid" id="subjectsGrid">
+                    <!-- Subjects will be populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- Planner View -->
+            <div id="planner" class="view">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="color: #1f2937; margin: 0;">Curriculum Planner</h2>
+                </div>
+                
+                <!-- Learner and Teacher Information -->
+                <div style="background: white; border-radius: 16px; padding: 24px; border: 2px solid #e5e7eb; margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 16px; color: #1f2937;">👥 Participant Information</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                        <div class="form-group">
+                            <label for="learnerName">👨‍🎓 Learner's Name</label>
+                            <input type="text" id="learnerName" class="form-control" placeholder="Enter learner's full name">
+                        </div>
+                        <div class="form-group">
+                            <label for="teacherName">👩‍🏫 Teacher/Facilitator's Name</label>
+                            <input type="text" id="teacherName" class="form-control" placeholder="Enter teacher's full name">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Planner Navigation -->
+                <div style="display: flex; gap: 12px; margin-bottom: 30px; background: #f8fafc; padding: 8px; border-radius: 12px;">
+                    <button class="planner-tab active" onclick="showPlannerView('subject-wise')">📚 Subject-Wise Planning</button>
+                    <button class="planner-tab" onclick="showPlannerView('period-wise')">📅 Period-Wise Planning</button>
+                </div>
+
+                <!-- Subject-Wise View -->
+                <div id="subject-wise" class="planner-view active">
+                    <div style="background: white; border-radius: 16px; padding: 24px; border: 2px solid #e5e7eb; margin-bottom: 20px;">
+                        <h3 style="margin-bottom: 20px; color: #1f2937;">Subject Planning Configuration</h3>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px;">
+                            <div class="form-group">
+                                <label for="subjectSelect">Subject</label>
+                                <select id="subjectSelect" class="form-control">
+                                    <option value="">Select Subject</option>
+                                    <option value="mathematics">🔢 Mathematics</option>
+                                    <option value="science">🔬 Science</option>
+                                    <option value="english">📝 English</option>
+                                    <option value="history">🏛️ History</option>
+                                    <option value="art">🎨 Art</option>
+                                    <option value="music">🎵 Music</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="gradeLevel">Grade Level</label>
+                                <select id="gradeLevel" class="form-control">
+                                    <option value="">Select Grade</option>
+                                    <option value="k">Kindergarten</option>
+                                    <option value="1">Grade 1</option>
+                                    <option value="2">Grade 2</option>
+                                    <option value="3">Grade 3</option>
+                                    <option value="4">Grade 4</option>
+                                    <option value="5">Grade 5</option>
+                                    <option value="6">Grade 6</option>
+                                    <option value="7">Grade 7</option>
+                                    <option value="8">Grade 8</option>
+                                    <option value="9">Grade 9</option>
+                                    <option value="10">Grade 10</option>
+                                    <option value="11">Grade 11</option>
+                                    <option value="12">Grade 12</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="schoolYearStart">School Year Start</label>
+                                <input type="month" id="schoolYearStart" class="form-control">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="calendarSystem">Calendar System</label>
+                                <select id="calendarSystem" class="form-control" onchange="updateCalendarTable()">
+                                    <option value="quarterly">Quarterly (4 periods)</option>
+                                    <option value="semester">Semester (2 periods)</option>
+                                    <option value="trimester">Trimester (3 periods)</option>
+                                    <option value="monthly">Monthly (12 periods)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <button class="btn" onclick="generateSubjectPlan()">🔄 Generate Subject Plan</button>
+                    </div>
+
+                    <!-- Monthly Planning Table -->
+                    <div style="background: white; border-radius: 16px; padding: 24px; border: 2px solid #e5e7eb; margin-bottom: 20px;">
+                        <h3 style="margin-bottom: 20px; color: #1f2937;">Monthly Curriculum Planning</h3>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                                <thead>
+                                    <tr style="background: linear-gradient(135deg, #2563eb 0%, #3b82f6 50%, #1d4ed8 100%);">
+                                        <th style="padding: 12px; border: 1px solid #1e40af; font-weight: 600; color: white;">Time Period</th>
+                                        <th style="padding: 12px; border: 1px solid #1e40af; font-weight: 600; color: white;">Learning Objectives</th>
+                                        <th style="padding: 12px; border: 1px solid #1e40af; font-weight: 600; color: white;">Key Concepts & Topics</th>
+                                        <th style="padding: 12px; border: 1px solid #1e40af; font-weight: 600; color: white;">Skills & Competencies</th>
+                                        <th style="padding: 12px; border: 1px solid #1e40af; font-weight: 600; color: white;">Assessment</th>
+                                        <th style="padding: 12px; border: 1px solid #1e40af; font-weight: 600; color: white;">Learning Activities</th>
+                                        <th style="padding: 12px; border: 1px solid #1e40af; font-weight: 600; color: white;">Resources & Materials</th>
+                                        <th style="padding: 12px; border: 1px solid #1e40af; font-weight: 600; color: white;">Standard Alignments</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="monthlyPlanTable">
+                                    <!-- Table rows will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <button class="btn" onclick="addMonthlyRow()" style="margin-top: 16px;">➕ Add Month</button>
+                    </div>
+
+                    <!-- Additional Planning Sections -->
+                    <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+                        <!-- First Row - Most Important -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;">
+                            <div style="background: white; border-radius: 16px; padding: 24px; border: 2px solid #e5e7eb;">
+                                <h3 style="margin-bottom: 16px; color: #1f2937;">🎯 Unit Learning Goals</h3>
+                                <textarea id="learningGoals" class="form-control" rows="4" placeholder="Define the overarching goals and outcomes for this unit..."></textarea>
+                            </div>
+                            
+                            <div style="background: white; border-radius: 16px; padding: 24px; border: 2px solid #e5e7eb;">
+                                <h3 style="margin-bottom: 16px; color: #1f2937;">📋 Prerequisites</h3>
+                                <textarea id="prerequisites" class="form-control" rows="4" placeholder="List the knowledge and skills students should have before starting..."></textarea>
+                            </div>
+                        </div>
+                        
+                        <!-- Second Row - Supporting Information -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 20px;">
+                            <div style="background: white; border-radius: 16px; padding: 24px; border: 2px solid #e5e7eb;">
+                                <h3 style="margin-bottom: 16px; color: #1f2937;">📝 Teaching Notes & Tips</h3>
+                                <textarea id="teachingNotes" class="form-control" rows="4" placeholder="Important teaching strategies, common challenges, and helpful tips..."></textarea>
+                            </div>
+                            
+                            <div style="background: white; border-radius: 16px; padding: 24px; border: 2px solid #e5e7eb;">
+                                <h3 style="margin-bottom: 16px; color: #1f2937;">🗺️ Cross-Curricular Connections</h3>
+                                <textarea id="mappingInsights" class="form-control" rows="4" placeholder="Connections to other subjects and interdisciplinary opportunities..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Period-Wise View -->
+                <div id="period-wise" class="planner-view">
+                    <div style="background: white; border-radius: 16px; padding: 24px; border: 2px solid #e5e7eb; margin-bottom: 20px;">
+                        <h3 style="margin-bottom: 20px; color: #1f2937;">Period Planning Configuration</h3>
+                        
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px;">
+                            <div class="form-group">
+                                <label for="quarterSelect" id="periodLabel">Quarter/Period</label>
+                                <select id="quarterSelect" class="form-control">
+                                    <option value="q1">Quarter 1 (Sep-Nov)</option>
+                                    <option value="q2">Quarter 2 (Dec-Feb)</option>
+                                    <option value="q3">Quarter 3 (Mar-May)</option>
+                                    <option value="q4">Quarter 4 (Jun-Aug)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="academicYear">Academic Year</label>
+                                <select id="academicYear" class="form-control">
+                                    <option value="2024-2025">2024-2025</option>
+                                    <option value="2025-2026">2025-2026</option>
+                                    <option value="2026-2027">2026-2027</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="countryRegion">Country/Region</label>
+                                <select id="countryRegion" class="form-control" onchange="updateCountryBasedOptions()">
+                                    <option value="us">🇺🇸 United States</option>
+                                    <option value="uk">🇬🇧 United Kingdom</option>
+                                    <option value="ca">🇨🇦 Canada</option>
+                                    <option value="au">🇦🇺 Australia</option>
+                                    <option value="nz">🇳🇿 New Zealand</option>
+                                    <option value="sg">🇸🇬 Singapore</option>
+                                    <option value="in">🇮🇳 India</option>
+                                    <option value="cn">🇨🇳 China</option>
+                                    <option value="kr">🇰🇷 South Korea</option>
+                                    <option value="jp">🇯🇵 Japan</option>
+                                    <option value="th">🇹🇭 Thailand</option>
+                                    <option value="my">🇲🇾 Malaysia</option>
+                                    <option value="ph">🇵🇭 Philippines</option>
+                                    <option value="id">🇮🇩 Indonesia</option>
+                                    <option value="ae">🇦🇪 UAE</option>
+                                    <option value="sa">🇸🇦 Saudi Arabia</option>
+                                    <option value="qa">🇶🇦 Qatar</option>
+                                    <option value="tr">🇹🇷 Turkey</option>
+                                    <option value="de">🇩🇪 Germany</option>
+                                    <option value="fr">🇫🇷 France</option>
+                                    <option value="other">🌍 Other/Add Country</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="interfaceLanguage">Interface Language</label>
+                                <select id="interfaceLanguage" class="form-control">
+                                    <option value="en">English</option>
+                                    <option value="es">Español</option>
+                                    <option value="fr">Français</option>
+                                    <option value="de">Deutsch</option>
+                                    <option value="zh">中文</option>
+                                    <option value="ja">日本語</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <button class="btn" onclick="generatePeriodPlan()">🔄 Generate Period Plan</button>
+                        
+                        <!-- Curriculum Information Display -->
+                        <div id="curriculumInfo" style="margin-top: 16px; padding: 16px; background: #f0f9ff; border-radius: 12px; border-left: 4px solid #0ea5e9; display: none;">
+                            <h4 style="margin-bottom: 8px; color: #0c4a6e;">📋 Curriculum Standards</h4>
+                            <p id="curriculumStandards" style="margin: 0; color: #0369a1; font-weight: 500;"></p>
+                        </div>
+                    </div>
+
+                    <!-- Weekly Planning Table -->
+                    <div style="background: white; border-radius: 16px; padding: 24px; border: 2px solid #e5e7eb;">
+                        <h3 style="margin-bottom: 20px; color: #1f2937;">Weekly Subject Planning</h3>
+                        <div style="overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                                <thead>
+                                    <tr style="background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);">
+                                        <th style="padding: 12px; border: 1px solid #065f46; font-weight: 600; color: white; min-width: 120px;">Subject</th>
+                                        <th style="padding: 12px; border: 1px solid #065f46; font-weight: 600; color: white; min-width: 150px;">Textbook</th>
+                                        <th style="padding: 12px; border: 1px solid #065f46; font-weight: 600; color: white; min-width: 100px;" id="week1Header">Week 1</th>
+                                        <th style="padding: 12px; border: 1px solid #065f46; font-weight: 600; color: white; min-width: 100px;" id="week2Header">Week 2</th>
+                                        <th style="padding: 12px; border: 1px solid #065f46; font-weight: 600; color: white; min-width: 100px;" id="week3Header">Week 3</th>
+                                        <th style="padding: 12px; border: 1px solid #065f46; font-weight: 600; color: white; min-width: 100px;" id="week4Header">Week 4</th>
+                                        <th style="padding: 12px; border: 1px solid #065f46; font-weight: 600; color: white; min-width: 100px;" id="week5Header">Week 5</th>
+                                        <th style="padding: 12px; border: 1px solid #065f46; font-weight: 600; color: white; min-width: 100px;" id="week6Header">Week 6</th>
+                                        <th style="padding: 12px; border: 1px solid #065f46; font-weight: 600; color: white; min-width: 100px;" id="week7Header">Week 7</th>
+                                        <th style="padding: 12px; border: 1px solid #065f46; font-weight: 600; color: white; min-width: 100px;" id="week8Header">Week 8</th>
+                                        <th style="padding: 12px; border: 1px solid #065f46; font-weight: 600; color: white; min-width: 100px;" id="week9Header">Week 9</th>
+                                        <th style="padding: 12px; border: 1px solid #065f46; font-weight: 600; color: white; min-width: 100px;" id="week10Header">Week 10</th>
+                                        <th style="padding: 12px; border: 1px solid #065f46; font-weight: 600; color: white; min-width: 100px;" id="week11Header">Week 11</th>
+                                        <th style="padding: 12px; border: 1px solid #065f46; font-weight: 600; color: white; min-width: 100px;" id="week12Header">Week 12</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="weeklyPlanTable">
+                                    <!-- Table rows will be populated by JavaScript -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <button class="btn" onclick="addSubjectRow()" style="margin-top: 16px;">➕ Add Subject</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Daily Schedule View -->
+            <div id="schedule" class="view">
+                <h2 style="margin-bottom: 20px; color: #1f2937;">Daily Schedule Template</h2>
+                
+                <div style="background: white; border-radius: 16px; padding: 24px; border: 2px solid #e5e7eb; margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 16px; color: #1f2937;">📅 Schedule Configuration</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px;">
+                        <div class="form-group">
+                            <label for="scheduleDay">Day of Week</label>
+                            <select id="scheduleDay" class="form-control">
+                                <option value="monday">Monday</option>
+                                <option value="tuesday">Tuesday</option>
+                                <option value="wednesday">Wednesday</option>
+                                <option value="thursday">Thursday</option>
+                                <option value="friday">Friday</option>
+                                <option value="saturday">Saturday</option>
+                                <option value="sunday">Sunday</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="scheduleDate">Date</label>
+                            <input type="date" id="scheduleDate" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="scheduleTemplate">Template Type</label>
+                            <select id="scheduleTemplate" class="form-control" onchange="loadScheduleTemplate()">
+                                <option value="standard">Standard Day (8 AM - 3 PM)</option>
+                                <option value="extended">Extended Day (7 AM - 5 PM)</option>
+                                <option value="flexible">Flexible Schedule</option>
+                                <option value="custom">Custom Template</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daily Schedule Table -->
+                <div style="background: white; border-radius: 16px; padding: 24px; border: 2px solid #e5e7eb;">
+                    <h3 style="margin-bottom: 20px; color: #1f2937;">🕐 Time Slot Schedule</h3>
+                    <div style="overflow-x: auto;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                            <thead>
+                                <tr style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);">
+                                    <th style="padding: 12px; border: 1px solid #92400e; font-weight: 600; color: white; min-width: 120px;">Time Slot</th>
+                                    <th style="padding: 12px; border: 1px solid #92400e; font-weight: 600; color: white; min-width: 150px;">Subject/Activity</th>
+                                    <th style="padding: 12px; border: 1px solid #92400e; font-weight: 600; color: white; min-width: 200px;">Learning Objectives</th>
+                                    <th style="padding: 12px; border: 1px solid #92400e; font-weight: 600; color: white; min-width: 200px;">Activities & Tasks</th>
+                                    <th style="padding: 12px; border: 1px solid #92400e; font-weight: 600; color: white; min-width: 150px;">Materials Needed</th>
+                                    <th style="padding: 12px; border: 1px solid #92400e; font-weight: 600; color: white; min-width: 100px;">Duration</th>
+                                    <th style="padding: 12px; border: 1px solid #92400e; font-weight: 600; color: white; min-width: 120px;">Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="scheduleTable">
+                                <!-- Schedule rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <button class="btn" onclick="addTimeSlot()" style="margin-top: 16px;">➕ Add Time Slot</button>
+                </div>
+            </div>
+
+            <!-- Progress View -->
+            <div id="progress" class="view">
+                <h2 style="margin-bottom: 20px; color: #1f2937;">Progress Tracking</h2>
+                
+                <div style="background: white; border-radius: 16px; padding: 24px; border: 2px solid #e5e7eb; margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 16px; color: #1f2937;">Subject Progress</h3>
+                    <div id="progressCharts">
+                        <!-- Progress charts will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <div style="background: white; border-radius: 16px; padding: 24px; border: 2px solid #e5e7eb;">
+                    <h3 style="margin-bottom: 16px; color: #1f2937;">Achievement Milestones</h3>
+                    <div id="milestones">
+                        <!-- Milestones will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div style="background: white; border-radius: 16px; padding: 24px; border: 2px solid #e5e7eb; margin-top: 30px;">
+                <h3 style="margin-bottom: 16px; color: #1f2937;">📄 Export & Save Options</h3>
+                <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                    <button class="btn" onclick="exportToPDF()">
+                        📄 Export PDF
+                    </button>
+                    <button class="btn btn-secondary" onclick="printPlanner()">
+                        🖨️ Print
+                    </button>
+                    <button class="btn" onclick="saveTemplate()" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
+                        💾 Save Template
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Subject Modal -->
+    <div id="addSubjectModal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('addSubjectModal')">&times;</button>
+            <h3 style="margin-bottom: 20px; color: #1f2937;">Add New Subject</h3>
+            <form onsubmit="addSubject(event)">
+                <div class="form-group">
+                    <label for="subjectName">Subject Name</label>
+                    <input type="text" id="subjectName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="subjectEmoji">Emoji</label>
+                    <input type="text" id="subjectEmoji" class="form-control" placeholder="📚" maxlength="2">
+                </div>
+                <div class="form-group">
+                    <label for="subjectDescription">Description</label>
+                    <textarea id="subjectDescription" class="form-control" rows="3"></textarea>
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addSubjectModal')">Cancel</button>
+                    <button type="submit" class="btn">Add Subject</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Lesson Modal -->
+    <div id="addLessonModal" class="modal">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeModal('addLessonModal')">&times;</button>
+            <h3 style="margin-bottom: 20px; color: #1f2937;">Add New Lesson</h3>
+            <form onsubmit="addLesson(event)">
+                <div class="form-group">
+                    <label for="lessonSubject">Subject</label>
+                    <select id="lessonSubject" class="form-control" required>
+                        <option value="">Select a subject</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="lessonTitle">Lesson Title</label>
+                    <input type="text" id="lessonTitle" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="lessonDate">Date</label>
+                    <input type="date" id="lessonDate" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="lessonDuration">Duration (minutes)</label>
+                    <input type="number" id="lessonDuration" class="form-control" min="15" max="180" value="60">
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addLessonModal')">Cancel</button>
+                    <button type="submit" class="btn">Add Lesson</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Data storage - All sections are interconnected with real progress tracking
+        let subjects = [
+            { id: 1, name: 'Mathematics', emoji: '🔢', description: 'Algebra, Geometry, and Statistics', progress: 0, lessons: 0, planningData: {} },
+            { id: 2, name: 'Science', emoji: '🔬', description: 'Chemistry, Physics, and Biology', progress: 0, lessons: 0, planningData: {} },
+            { id: 3, name: 'English', emoji: '📝', description: 'Literature, Writing, and Grammar', progress: 0, lessons: 0, planningData: {} },
+            { id: 4, name: 'History', emoji: '🏛️', description: 'World History and Geography', progress: 0, lessons: 0, planningData: {} },
+            { id: 5, name: 'Art', emoji: '🎨', description: 'Drawing, Painting, and Creative Expression', progress: 0, lessons: 0, planningData: {} },
+            { id: 6, name: 'Music', emoji: '🎵', description: 'Theory, Practice, and Appreciation', progress: 0, lessons: 0, planningData: {} }
+        ];
+
+        let lessons = [
+            // Lessons will be added dynamically and progress calculated from actual data
+        ];
+
+        // Global curriculum data
+        let globalCurricula = {
+            'us': {
+                name: '🇺🇸 United States',
+                standards: 'Common Core State Standards',
+                subjects: ['Mathematics', 'English Language Arts', 'Science', 'Social Studies', 'Physical Education', 'Arts'],
+                gradeLevels: ['K', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+                calendarSystems: ['semester', 'quarterly', 'trimester']
+            },
+            'uk': {
+                name: '🇬🇧 United Kingdom',
+                standards: 'National Curriculum for England',
+                subjects: ['Mathematics', 'English', 'Science', 'History', 'Geography', 'Art & Design', 'Music', 'PE', 'Computing'],
+                gradeLevels: ['Reception', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9', 'Year 10', 'Year 11'],
+                calendarSystems: ['termly', 'half-termly', 'yearly']
+            },
+            'ca': {
+                name: '🇨🇦 Canada',
+                standards: 'Provincial Curriculum Standards',
+                subjects: ['Mathematics', 'Language Arts', 'Science', 'Social Studies', 'Health & Career Education', 'Arts Education', 'Physical Education'],
+                gradeLevels: ['K', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
+                calendarSystems: ['semester', 'quarterly', 'linear']
+            },
+            'au': {
+                name: '🇦🇺 Australia',
+                standards: 'Australian Curriculum',
+                subjects: ['Mathematics', 'English', 'Science', 'Humanities & Social Sciences', 'Health & Physical Education', 'The Arts', 'Technologies'],
+                gradeLevels: ['Foundation', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9', 'Year 10', 'Year 11', 'Year 12'],
+                calendarSystems: ['termly', 'semester', 'yearly']
+            },
+            'nz': {
+                name: '🇳🇿 New Zealand',
+                standards: 'New Zealand Curriculum',
+                subjects: ['Mathematics', 'English', 'Science', 'Social Sciences', 'Health & Physical Education', 'The Arts', 'Technology'],
+                gradeLevels: ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9', 'Year 10', 'Year 11', 'Year 12', 'Year 13'],
+                calendarSystems: ['termly', 'semester', 'yearly']
+            },
+            'sg': {
+                name: '🇸🇬 Singapore',
+                standards: 'Singapore Curriculum',
+                subjects: ['Mathematics', 'English Language', 'Science', 'Social Studies', 'Mother Tongue', 'Physical Education', 'Arts'],
+                gradeLevels: ['Primary 1', 'Primary 2', 'Primary 3', 'Primary 4', 'Primary 5', 'Primary 6', 'Secondary 1', 'Secondary 2', 'Secondary 3', 'Secondary 4'],
+                calendarSystems: ['semester', 'termly', 'yearly']
+            },
+            'in': {
+                name: '🇮🇳 India',
+                standards: 'NCERT/CBSE Curriculum',
+                subjects: ['Mathematics', 'English', 'Hindi', 'Science', 'Social Science', 'Physical Education', 'Arts'],
+                gradeLevels: ['Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'],
+                calendarSystems: ['semester', 'quarterly', 'yearly']
+            },
+            'de': {
+                name: '🇩🇪 Germany',
+                standards: 'German Education Standards',
+                subjects: ['Mathematik', 'Deutsch', 'Sachunterricht', 'Englisch', 'Geschichte', 'Erdkunde', 'Kunst', 'Musik', 'Sport'],
+                gradeLevels: ['Klasse 1', 'Klasse 2', 'Klasse 3', 'Klasse 4', 'Klasse 5', 'Klasse 6', 'Klasse 7', 'Klasse 8', 'Klasse 9', 'Klasse 10', 'Klasse 11', 'Klasse 12'],
+                calendarSystems: ['semester', 'quarterly', 'yearly']
+            },
+            'fr': {
+                name: '🇫🇷 France',
+                standards: 'French National Education',
+                subjects: ['Mathématiques', 'Français', 'Sciences', 'Histoire-Géographie', 'Éducation Physique', 'Arts Plastiques', 'Musique'],
+                gradeLevels: ['CP', 'CE1', 'CE2', 'CM1', 'CM2', '6ème', '5ème', '4ème', '3ème', '2nde', '1ère', 'Terminale'],
+                calendarSystems: ['trimester', 'semester', 'yearly']
+            },
+            'jp': {
+                name: '🇯🇵 Japan',
+                standards: 'Japanese Course of Study',
+                subjects: ['算数/数学', '国語', '理科', '社会', '体育', '音楽', '図画工作/美術', '英語'],
+                gradeLevels: ['小1', '小2', '小3', '小4', '小5', '小6', '中1', '中2', '中3', '高1', '高2', '高3'],
+                calendarSystems: ['trimester', 'semester', 'yearly']
+            },
+            'cn': {
+                name: '🇨🇳 China',
+                standards: 'Chinese National Curriculum',
+                subjects: ['数学', '语文', '英语', '科学', '历史', '地理', '体育', '美术', '音乐'],
+                gradeLevels: ['一年级', '二年级', '三年级', '四年级', '五年级', '六年级', '七年级', '八年级', '九年级', '高一', '高二', '高三'],
+                calendarSystems: ['semester', 'quarterly', 'yearly']
+            },
+            'kr': {
+                name: '🇰🇷 South Korea',
+                standards: 'Korean National Curriculum',
+                subjects: ['수학', '국어', '영어', '과학', '사회', '체육', '음악', '미술'],
+                gradeLevels: ['초1', '초2', '초3', '초4', '초5', '초6', '중1', '중2', '중3', '고1', '고2', '고3'],
+                calendarSystems: ['semester', 'quarterly', 'yearly']
+            },
+            'th': {
+                name: '🇹🇭 Thailand',
+                standards: 'Thai Basic Education Core Curriculum',
+                subjects: ['คณิตศาสตร์', 'ภาษาไทย', 'ภาษาอังกฤษ', 'วิทยาศาสตร์', 'สังคมศึกษา', 'พลศึกษา', 'ศิลปะ'],
+                gradeLevels: ['ป.1', 'ป.2', 'ป.3', 'ป.4', 'ป.5', 'ป.6', 'ม.1', 'ม.2', 'ม.3', 'ม.4', 'ม.5', 'ม.6'],
+                calendarSystems: ['semester', 'trimester', 'yearly']
+            },
+            'my': {
+                name: '🇲🇾 Malaysia',
+                standards: 'Malaysian National Curriculum',
+                subjects: ['Matematik', 'Bahasa Malaysia', 'English', 'Science', 'Sejarah', 'Geografi', 'Pendidikan Jasmani', 'Seni'],
+                gradeLevels: ['Tahun 1', 'Tahun 2', 'Tahun 3', 'Tahun 4', 'Tahun 5', 'Tahun 6', 'Tingkatan 1', 'Tingkatan 2', 'Tingkatan 3', 'Tingkatan 4', 'Tingkatan 5'],
+                calendarSystems: ['semester', 'termly', 'yearly']
+            },
+            'ph': {
+                name: '🇵🇭 Philippines',
+                standards: 'K to 12 Basic Education Curriculum',
+                subjects: ['Mathematics', 'Filipino', 'English', 'Science', 'Araling Panlipunan', 'MAPEH', 'TLE'],
+                gradeLevels: ['Kinder', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'],
+                calendarSystems: ['quarterly', 'semester', 'yearly']
+            },
+            'id': {
+                name: '🇮🇩 Indonesia',
+                standards: 'Indonesian National Curriculum',
+                subjects: ['Matematika', 'Bahasa Indonesia', 'Bahasa Inggris', 'IPA', 'IPS', 'Pendidikan Jasmani', 'Seni Budaya'],
+                gradeLevels: ['Kelas 1', 'Kelas 2', 'Kelas 3', 'Kelas 4', 'Kelas 5', 'Kelas 6', 'Kelas 7', 'Kelas 8', 'Kelas 9', 'Kelas 10', 'Kelas 11', 'Kelas 12'],
+                calendarSystems: ['semester', 'quarterly', 'yearly']
+            },
+            'ae': {
+                name: '🇦🇪 UAE',
+                standards: 'UAE National Curriculum',
+                subjects: ['Mathematics', 'Arabic', 'English', 'Science', 'Social Studies', 'Islamic Studies', 'Physical Education', 'Arts'],
+                gradeLevels: ['KG1', 'KG2', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'],
+                calendarSystems: ['semester', 'trimester', 'yearly']
+            },
+            'sa': {
+                name: '🇸🇦 Saudi Arabia',
+                standards: 'Saudi National Curriculum',
+                subjects: ['الرياضيات', 'اللغة العربية', 'اللغة الإنجليزية', 'العلوم', 'الدراسات الاجتماعية', 'التربية الإسلامية', 'التربية البدنية', 'الفنون'],
+                gradeLevels: ['الصف الأول', 'الصف الثاني', 'الصف الثالث', 'الصف الرابع', 'الصف الخامس', 'الصف السادس', 'الصف السابع', 'الصف الثامن', 'الصف التاسع', 'الصف العاشر', 'الصف الحادي عشر', 'الصف الثاني عشر'],
+                calendarSystems: ['semester', 'quarterly', 'yearly']
+            },
+            'qa': {
+                name: '🇶🇦 Qatar',
+                standards: 'Qatar National Curriculum',
+                subjects: ['Mathematics', 'Arabic', 'English', 'Science', 'Social Studies', 'Islamic Studies', 'Physical Education', 'Arts'],
+                gradeLevels: ['Foundation', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'],
+                calendarSystems: ['semester', 'trimester', 'yearly']
+            },
+            'tr': {
+                name: '🇹🇷 Turkey',
+                standards: 'Turkish National Curriculum',
+                subjects: ['Matematik', 'Türkçe', 'İngilizce', 'Fen Bilimleri', 'Sosyal Bilgiler', 'Beden Eğitimi', 'Sanat'],
+                gradeLevels: ['1. Sınıf', '2. Sınıf', '3. Sınıf', '4. Sınıf', '5. Sınıf', '6. Sınıf', '7. Sınıf', '8. Sınıf', '9. Sınıf', '10. Sınıf', '11. Sınıf', '12. Sınıf'],
+                calendarSystems: ['semester', 'quarterly', 'yearly']
+            }
+        };
+
+        // Calendar system configurations
+        let calendarConfigs = {
+            'quarterly': { periods: 4, name: 'Quarter', duration: '3 months' },
+            'semester': { periods: 2, name: 'Semester', duration: '6 months' },
+            'trimester': { periods: 3, name: 'Trimester', duration: '4 months' },
+            'termly': { periods: 3, name: 'Term', duration: '4 months' },
+            'half-termly': { periods: 6, name: 'Half-Term', duration: '2 months' },
+            'monthly': { periods: 12, name: 'Month', duration: '1 month' },
+            'linear': { periods: 1, name: 'Full Year', duration: '10 months' },
+            'yearly': { periods: 1, name: 'Academic Year', duration: '10 months' }
+        };
+
+        // Navigation functions
+        function showView(viewName) {
+            // Hide all views
+            document.querySelectorAll('.view').forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected view
+            document.getElementById(viewName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            // Load view-specific content
+            if (viewName === 'subjects') {
+                loadSubjects();
+            } else if (viewName === 'planner') {
+                initializePlannerTables();
+                populateLessonSubjects();
+            } else if (viewName === 'schedule') {
+                loadScheduleTemplate();
+            } else if (viewName === 'progress') {
+                loadProgressCharts();
+                loadMilestones();
+            } else if (viewName === 'overview') {
+                updateOverviewStats();
+            }
+        }
+
+        // Planner view navigation
+        function showPlannerView(viewName) {
+            // Hide all planner views
+            document.querySelectorAll('.planner-view').forEach(view => {
+                view.classList.remove('active');
+            });
+            
+            // Remove active class from all planner tabs
+            document.querySelectorAll('.planner-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected planner view
+            document.getElementById(viewName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+            
+            // Initialize tables based on view
+            if (viewName === 'subject-wise') {
+                initializeMonthlyPlanTable();
+            } else if (viewName === 'period-wise') {
+                initializeWeeklyPlanTable();
+            }
+        }
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // Subject management
+        function loadSubjects() {
+            const grid = document.getElementById('subjectsGrid');
+            grid.innerHTML = '';
+            
+            subjects.forEach(subject => {
+                const card = document.createElement('div');
+                card.className = 'subject-card';
+                card.innerHTML = `
+                    <h3>${subject.emoji} ${subject.name}</h3>
+                    <p>${subject.description}</p>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${subject.progress}%"></div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 12px;">
+                        <small style="color: #6b7280;">${subject.progress}% Complete • ${subject.lessons} lessons</small>
+                        <button class="btn btn-danger" onclick="deleteSubject(${subject.id})" style="padding: 6px 12px; font-size: 0.8rem;">
+                            🗑️ Delete
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function addSubject(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('subjectName').value;
+            const emoji = document.getElementById('subjectEmoji').value || '📚';
+            const description = document.getElementById('subjectDescription').value;
+            
+            const newSubject = {
+                id: Date.now(),
+                name,
+                emoji,
+                description,
+                progress: 0,
+                lessons: 0,
+                planningData: {}
+            };
+            
+            subjects.push(newSubject);
+            closeModal('addSubjectModal');
+            
+            // Reset form
+            document.getElementById('subjectName').value = '';
+            document.getElementById('subjectEmoji').value = '';
+            document.getElementById('subjectDescription').value = '';
+            
+            // Update all interconnected sections
+            updateAllSections();
+        }
+
+        // Update all sections when data changes
+        function updateAllSections() {
+            updateOverviewStats();
+            if (document.getElementById('subjects').classList.contains('active')) {
+                loadSubjects();
+            }
+            populateLessonSubjects();
+            updateSubjectDropdown();
+        }
+
+        // Update subject dropdown in planner
+        function updateSubjectDropdown() {
+            const select = document.getElementById('subjectSelect');
+            const currentValue = select.value;
+            select.innerHTML = '<option value="">Select Subject</option>';
+            
+            subjects.forEach(subject => {
+                const option = document.createElement('option');
+                option.value = subject.id;
+                option.textContent = `${subject.emoji} ${subject.name}`;
+                select.appendChild(option);
+            });
+            
+            // Restore previous selection if it still exists
+            if (currentValue) {
+                select.value = currentValue;
+            }
+        }
+
+        // Update calendar table based on selected system
+        function updateCalendarTable() {
+            const calendarSystem = document.getElementById('calendarSystem').value;
+            const config = calendarConfigs[calendarSystem];
+            
+            if (!config) return;
+            
+            // Clear existing table
+            const tableBody = document.getElementById('monthlyPlanTable');
+            tableBody.innerHTML = '';
+            
+            // Update weekly table headers based on calendar system
+            updateWeeklyTableHeaders(calendarSystem);
+            
+            // Add rows based on calendar system with detailed month breakdowns
+            for (let i = 1; i <= config.periods; i++) {
+                let periodName = '';
+                
+                if (calendarSystem === 'quarterly') {
+                    const quarterMonths = [
+                        'Quarter 1 (September - November)',
+                        'Quarter 2 (December - February)', 
+                        'Quarter 3 (March - May)',
+                        'Quarter 4 (June - August)'
+                    ];
+                    periodName = quarterMonths[i - 1] || `Quarter ${i}`;
+                } else if (calendarSystem === 'semester') {
+                    const semesterMonths = [
+                        'Semester 1 (September - February)',
+                        'Semester 2 (March - August)'
+                    ];
+                    periodName = semesterMonths[i - 1] || `Semester ${i}`;
+                } else if (calendarSystem === 'trimester') {
+                    const trimesterMonths = [
+                        'Trimester 1 (September - December)',
+                        'Trimester 2 (January - April)',
+                        'Trimester 3 (May - August)'
+                    ];
+                    periodName = trimesterMonths[i - 1] || `Trimester ${i}`;
+                } else if (calendarSystem === 'monthly') {
+                    const months = ['September', 'October', 'November', 'December', 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August'];
+                    periodName = months[i - 1] || `Month ${i}`;
+                }
+                
+                addMonthlyRow(periodName);
+            }
+        }
+
+        // Update weekly table headers based on calendar system
+        function updateWeeklyTableHeaders(calendarSystem) {
+            const config = calendarConfigs[calendarSystem];
+            if (!config) return;
+            
+            const totalWeeks = config.periods === 1 ? 36 : config.periods * 12; // Adjust weeks based on periods
+            const weeksPerPeriod = Math.ceil(totalWeeks / config.periods);
+            
+            // Update header labels
+            for (let i = 1; i <= 12; i++) {
+                const header = document.getElementById(`week${i}Header`);
+                if (header) {
+                    if (i <= weeksPerPeriod) {
+                        header.textContent = `Week ${i}`;
+                        header.style.display = 'table-cell';
+                    } else {
+                        header.style.display = 'none';
+                    }
+                }
+            }
+        }
+
+        // Update country-based options
+        function updateCountryBasedOptions() {
+            const country = document.getElementById('countryRegion').value;
+            const curriculum = globalCurricula[country];
+            
+            if (!curriculum) return;
+            
+            // Update period label and options
+            const periodLabel = document.getElementById('periodLabel');
+            const quarterSelect = document.getElementById('quarterSelect');
+            
+            // Update calendar system options based on country
+            const calendarSelect = document.getElementById('calendarSystem');
+            calendarSelect.innerHTML = '';
+            
+            curriculum.calendarSystems.forEach(system => {
+                const config = calendarConfigs[system];
+                if (config) {
+                    const option = document.createElement('option');
+                    option.value = system;
+                    option.textContent = `${config.name} (${config.periods} periods - ${config.duration})`;
+                    calendarSelect.appendChild(option);
+                }
+            });
+            
+            // Update period dropdown based on first calendar system
+            if (curriculum.calendarSystems.length > 0) {
+                updatePeriodDropdown(curriculum.calendarSystems[0]);
+            }
+            
+            // Show curriculum info
+            showCurriculumInfo(curriculum);
+        }
+
+        // Update period dropdown based on calendar system
+        function updatePeriodDropdown(calendarSystem) {
+            const config = calendarConfigs[calendarSystem];
+            const periodLabel = document.getElementById('periodLabel');
+            const quarterSelect = document.getElementById('quarterSelect');
+            
+            if (!config) return;
+            
+            periodLabel.textContent = config.name;
+            quarterSelect.innerHTML = '';
+            
+            for (let i = 1; i <= config.periods; i++) {
+                const option = document.createElement('option');
+                option.value = `p${i}`;
+                option.textContent = `${config.name} ${i}`;
+                quarterSelect.appendChild(option);
+            }
+        }
+
+        // Show curriculum information
+        function showCurriculumInfo(curriculum) {
+            const infoDiv = document.getElementById('curriculumInfo');
+            const standardsP = document.getElementById('curriculumStandards');
+            
+            if (infoDiv && standardsP) {
+                standardsP.textContent = `${curriculum.name} - ${curriculum.standards}`;
+                infoDiv.style.display = 'block';
+            }
+            
+            console.log(`Using ${curriculum.name} curriculum with ${curriculum.standards}`);
+        }
+
+        function deleteSubject(id) {
+            if (confirm('Are you sure you want to delete this subject? This will also remove all associated lessons.')) {
+                // Remove subject
+                subjects = subjects.filter(subject => subject.id !== id);
+                
+                // Remove associated lessons
+                lessons = lessons.filter(lesson => lesson.subjectId !== id);
+                
+                // Update all interconnected sections
+                updateAllSections();
+            }
+        }
+
+        // Lesson management
+        function populateLessonSubjects() {
+            const select = document.getElementById('lessonSubject');
+            select.innerHTML = '<option value="">Select a subject</option>';
+            
+            subjects.forEach(subject => {
+                const option = document.createElement('option');
+                option.value = subject.id;
+                option.textContent = `${subject.emoji} ${subject.name}`;
+                select.appendChild(option);
+            });
+        }
+
+        function addLesson(event) {
+            event.preventDefault();
+            
+            const subjectId = parseInt(document.getElementById('lessonSubject').value);
+            const title = document.getElementById('lessonTitle').value;
+            const date = document.getElementById('lessonDate').value;
+            const duration = parseInt(document.getElementById('lessonDuration').value);
+            
+            const newLesson = {
+                id: Date.now(),
+                subjectId,
+                title,
+                date,
+                duration,
+                status: 'not-started'
+            };
+            
+            lessons.push(newLesson);
+            
+            // Update subject lesson count and progress
+            const subject = subjects.find(s => s.id === subjectId);
+            if (subject) {
+                subject.lessons += 1;
+                // Recalculate progress based on completed lessons
+                const subjectLessons = lessons.filter(l => l.subjectId === subjectId);
+                const completedLessons = subjectLessons.filter(l => l.status === 'completed');
+                subject.progress = subjectLessons.length > 0 ? Math.round((completedLessons.length / subjectLessons.length) * 100) : 0;
+            }
+            
+            closeModal('addLessonModal');
+            
+            // Reset form
+            document.getElementById('lessonSubject').value = '';
+            document.getElementById('lessonTitle').value = '';
+            document.getElementById('lessonDate').value = '';
+            document.getElementById('lessonDuration').value = '60';
+            
+            // Update all interconnected sections
+            updateAllSections();
+        }
+
+        // Update lesson status and recalculate progress
+        function updateLessonStatus(lessonId, newStatus) {
+            const lesson = lessons.find(l => l.id === lessonId);
+            if (lesson) {
+                lesson.status = newStatus;
+                
+                // Update subject progress
+                const subject = subjects.find(s => s.id === lesson.subjectId);
+                if (subject) {
+                    const subjectLessons = lessons.filter(l => l.subjectId === lesson.subjectId);
+                    const completedLessons = subjectLessons.filter(l => l.status === 'completed');
+                    subject.progress = subjectLessons.length > 0 ? Math.round((completedLessons.length / subjectLessons.length) * 100) : 0;
+                }
+                
+                updateAllSections();
+            }
+        }
+
+
+
+        // Planner table management
+        function initializePlannerTables() {
+            initializeMonthlyPlanTable();
+            initializeWeeklyPlanTable();
+        }
+
+        function initializeMonthlyPlanTable() {
+            const tableBody = document.getElementById('monthlyPlanTable');
+            if (tableBody.children.length === 0) {
+                // Add sample rows
+                addMonthlyRow('September 2024');
+                addMonthlyRow('October 2024');
+                addMonthlyRow('November 2024');
+            }
+        }
+
+        function addMonthlyRow(timePeriod = '') {
+            const tableBody = document.getElementById('monthlyPlanTable');
+            const row = document.createElement('tr');
+            
+            row.innerHTML = `
+                <td style="padding: 8px; border: 1px solid #e5e7eb;">
+                    <input type="text" value="${timePeriod}" placeholder="Month/Period" style="width: 100%; border: none; background: transparent; padding: 4px;">
+                </td>
+                <td style="padding: 8px; border: 1px solid #e5e7eb;">
+                    <textarea placeholder="Learning objectives..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 60px; padding: 4px;"></textarea>
+                </td>
+                <td style="padding: 8px; border: 1px solid #e5e7eb;">
+                    <textarea placeholder="Key concepts and topics..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 60px; padding: 4px;"></textarea>
+                </td>
+                <td style="padding: 8px; border: 1px solid #e5e7eb;">
+                    <textarea placeholder="Skills and competencies..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 60px; padding: 4px;"></textarea>
+                </td>
+                <td style="padding: 8px; border: 1px solid #e5e7eb;">
+                    <textarea placeholder="Assessment methods..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 60px; padding: 4px;"></textarea>
+                </td>
+                <td style="padding: 8px; border: 1px solid #e5e7eb;">
+                    <textarea placeholder="Learning activities..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 60px; padding: 4px;"></textarea>
+                </td>
+                <td style="padding: 8px; border: 1px solid #e5e7eb;">
+                    <textarea placeholder="Resources and materials..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 60px; padding: 4px;"></textarea>
+                </td>
+                <td style="padding: 8px; border: 1px solid #e5e7eb;">
+                    <textarea placeholder="Standard alignments..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 60px; padding: 4px;"></textarea>
+                </td>
+            `;
+            
+            tableBody.appendChild(row);
+        }
+
+        function initializeWeeklyPlanTable() {
+            const tableBody = document.getElementById('weeklyPlanTable');
+            if (tableBody.children.length === 0) {
+                // Add sample rows for each subject
+                const sampleSubjects = [
+                    { name: '🔢 Mathematics', textbook: 'Saxon Math 7/6' },
+                    { name: '🔬 Science', textbook: 'Apologia General Science' },
+                    { name: '📝 English', textbook: 'IEW Student Writing Intensive' },
+                    { name: '🏛️ History', textbook: 'Story of the World Vol. 3' }
+                ];
+                
+                sampleSubjects.forEach(subject => {
+                    addSubjectRow(subject.name, subject.textbook);
+                });
+            }
+        }
+
+        function addSubjectRow(subjectName = '', textbook = '') {
+            const tableBody = document.getElementById('weeklyPlanTable');
+            const row = document.createElement('tr');
+            
+            let weekCells = '';
+            for (let i = 1; i <= 12; i++) {
+                weekCells += `
+                    <td style="padding: 8px; border: 1px solid #e5e7eb;">
+                        <textarea placeholder="Week ${i} content..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 50px; padding: 4px; font-size: 0.8rem;"></textarea>
+                    </td>
+                `;
+            }
+            
+            row.innerHTML = `
+                <td style="padding: 8px; border: 1px solid #e5e7eb;">
+                    <input type="text" value="${subjectName}" placeholder="Subject" style="width: 100%; border: none; background: transparent; padding: 4px; font-weight: 600;">
+                </td>
+                <td style="padding: 8px; border: 1px solid #e5e7eb;">
+                    <input type="text" value="${textbook}" placeholder="Textbook/Resource" style="width: 100%; border: none; background: transparent; padding: 4px;">
+                </td>
+                ${weekCells}
+            `;
+            
+            tableBody.appendChild(row);
+        }
+
+        function generateSubjectPlan() {
+            const subjectId = document.getElementById('subjectSelect').value;
+            const grade = document.getElementById('gradeLevel').value;
+            const yearStart = document.getElementById('schoolYearStart').value;
+            const calendar = document.getElementById('calendarSystem').value;
+            
+            if (!subjectId || !grade) {
+                alert('Please select a subject and grade level first.');
+                return;
+            }
+            
+            const subject = subjects.find(s => s.id == subjectId);
+            if (!subject) return;
+            
+            // Auto-populate planning sections with sample data
+            document.getElementById('learningGoals').value = `By the end of this unit, students will be able to:\n• Master key ${subject.name} concepts for ${grade}\n• Apply problem-solving strategies\n• Demonstrate understanding through assessments\n• Connect learning to real-world applications`;
+            
+            document.getElementById('prerequisites').value = `Students should have:\n• Completed previous grade level ${subject.name}\n• Basic foundational skills\n• Ability to follow multi-step instructions\n• Access to required materials and resources`;
+            
+            document.getElementById('teachingNotes').value = `Teaching Tips:\n• Break complex concepts into smaller steps\n• Use visual aids and hands-on activities\n• Provide regular feedback and encouragement\n• Adapt pace based on student understanding\n• Include review sessions before assessments`;
+            
+            document.getElementById('mappingInsights').value = `Cross-curricular connections:\n• Link ${subject.name} concepts to other subjects\n• Incorporate real-world applications\n• Use interdisciplinary projects\n• Connect to student interests and experiences`;
+            
+            // Update the calendar table with the new system
+            updateCalendarTable();
+            
+            alert(`✅ Generated ${calendar} curriculum plan for ${subject.emoji} ${subject.name} (${grade})!\n\nThe planning sections have been populated with educational framework guidelines. You can now customize the content for your specific needs.`);
+        }
+
+        function generatePeriodPlan() {
+            const period = document.getElementById('quarterSelect').value;
+            const year = document.getElementById('academicYear').value;
+            const country = document.getElementById('countryRegion').value;
+            const language = document.getElementById('interfaceLanguage').value;
+            
+            const curriculum = globalCurricula[country];
+            if (!curriculum) return;
+            
+            // Clear and populate weekly planning table with subjects from selected country
+            const tableBody = document.getElementById('weeklyPlanTable');
+            tableBody.innerHTML = '';
+            
+            // Add subjects based on selected country's curriculum
+            curriculum.subjects.slice(0, 6).forEach(subjectName => {
+                addSubjectRow(subjectName, 'Curriculum Resource');
+            });
+            
+            // Update academic year based on school year start
+            updateAcademicYear();
+            
+            alert(`✅ Generated period plan for ${period} ${year}!\n\nCountry: ${curriculum.name}\nStandards: ${curriculum.standards}\nInterface: ${language}\n\nThe weekly planning table has been populated with subjects from the ${curriculum.name} curriculum. You can now add specific content for each week.`);
+        }
+
+        // Progress tracking
+        function loadProgressCharts() {
+            const container = document.getElementById('progressCharts');
+            container.innerHTML = '';
+            
+            subjects.forEach(subject => {
+                const chartDiv = document.createElement('div');
+                chartDiv.style.cssText = 'margin-bottom: 20px; padding: 16px; background: #f9fafb; border-radius: 12px;';
+                chartDiv.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-weight: 600; color: #374151;">${subject.emoji} ${subject.name}</span>
+                        <span style="font-weight: 600; color: #6366f1;">${subject.progress}%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${subject.progress}%"></div>
+                    </div>
+                `;
+                container.appendChild(chartDiv);
+            });
+        }
+
+        function loadMilestones() {
+            const container = document.getElementById('milestones');
+            const milestones = [
+                { title: 'First Month Complete', description: 'Completed your first month of homeschooling!', achieved: true },
+                { title: 'Math Mastery', description: 'Achieved 80% progress in Mathematics', achieved: false },
+                { title: 'Science Explorer', description: 'Completed 10 science experiments', achieved: true },
+                { title: 'Reading Champion', description: 'Read 5 books this semester', achieved: false }
+            ];
+            
+            container.innerHTML = '';
+            
+            milestones.forEach(milestone => {
+                const milestoneDiv = document.createElement('div');
+                milestoneDiv.style.cssText = `
+                    padding: 16px; 
+                    background: ${milestone.achieved ? '#dcfce7' : '#f9fafb'}; 
+                    border-radius: 12px; 
+                    margin-bottom: 12px;
+                    border-left: 4px solid ${milestone.achieved ? '#22c55e' : '#d1d5db'};
+                `;
+                milestoneDiv.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <span style="font-size: 1.5rem;">${milestone.achieved ? '🏆' : '⏳'}</span>
+                        <div>
+                            <h4 style="margin-bottom: 4px; color: #374151;">${milestone.title}</h4>
+                            <p style="color: #6b7280; margin: 0;">${milestone.description}</p>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(milestoneDiv);
+            });
+        }
+
+        function updateOverviewStats() {
+            document.getElementById('totalSubjects').textContent = subjects.length;
+            document.getElementById('completedLessons').textContent = lessons.filter(l => l.status === 'completed').length;
+            
+            const avgProgress = subjects.reduce((sum, subject) => sum + subject.progress, 0) / subjects.length;
+            document.getElementById('overallProgress').textContent = Math.round(avgProgress);
+            
+            const totalHours = lessons.reduce((sum, lesson) => sum + lesson.duration, 0) / 60;
+            document.getElementById('weeklyHours').textContent = Math.round(totalHours);
+        }
+
+        // Export and save functions
+        function exportToPDF() {
+            alert('📄 PDF Export Feature\n\nThis would generate a comprehensive PDF report including:\n• Curriculum overview and progress\n• Subject planning details\n• Weekly schedules\n• Daily time slots\n• Assessment records\n\nNote: This is a demo - in a full implementation, this would use a PDF library like jsPDF or html2pdf.');
+        }
+
+        function printPlanner() {
+            window.print();
+        }
+
+        function saveTemplate() {
+            const templateData = {
+                learnerName: document.getElementById('learnerName')?.value || '',
+                teacherName: document.getElementById('teacherName')?.value || '',
+                subjects: subjects,
+                lessons: lessons,
+                planningData: {
+                    learningGoals: document.getElementById('learningGoals')?.value || '',
+                    prerequisites: document.getElementById('prerequisites')?.value || '',
+                    teachingNotes: document.getElementById('teachingNotes')?.value || '',
+                    mappingInsights: document.getElementById('mappingInsights')?.value || ''
+                },
+                timestamp: new Date().toISOString()
+            };
+            
+            // Save to localStorage
+            localStorage.setItem('eduflow_template', JSON.stringify(templateData));
+            alert('💾 Template Saved Successfully!\n\nYour curriculum template has been saved locally. You can restore it anytime by refreshing the page.');
+        }
+
+        // Daily schedule functions
+        function loadScheduleTemplate() {
+            const template = document.getElementById('scheduleTemplate').value;
+            const tableBody = document.getElementById('scheduleTable');
+            tableBody.innerHTML = '';
+            
+            let timeSlots = [];
+            
+            switch(template) {
+                case 'standard':
+                    timeSlots = [
+                        '8:00 AM - 8:30 AM', '8:30 AM - 9:30 AM', '9:30 AM - 10:30 AM', '10:30 AM - 10:45 AM',
+                        '10:45 AM - 11:45 AM', '11:45 AM - 12:45 PM', '12:45 PM - 1:30 PM', '1:30 PM - 2:30 PM', '2:30 PM - 3:00 PM'
+                    ];
+                    break;
+                case 'extended':
+                    timeSlots = [
+                        '7:00 AM - 7:30 AM', '7:30 AM - 8:30 AM', '8:30 AM - 9:30 AM', '9:30 AM - 10:30 AM', '10:30 AM - 10:45 AM',
+                        '10:45 AM - 11:45 AM', '11:45 AM - 12:45 PM', '12:45 PM - 1:30 PM', '1:30 PM - 2:30 PM', 
+                        '2:30 PM - 3:30 PM', '3:30 PM - 4:30 PM', '4:30 PM - 5:00 PM'
+                    ];
+                    break;
+                case 'flexible':
+                    timeSlots = [
+                        'Morning Block 1', 'Morning Block 2', 'Mid-Morning Break', 'Late Morning Block', 
+                        'Lunch Period', 'Afternoon Block 1', 'Afternoon Block 2', 'Evening Wrap-up'
+                    ];
+                    break;
+                default:
+                    timeSlots = ['Custom Time Slot 1', 'Custom Time Slot 2', 'Custom Time Slot 3'];
+            }
+            
+            timeSlots.forEach(timeSlot => {
+                addTimeSlot(timeSlot);
+            });
+        }
+
+        function addTimeSlot(timeSlot = '') {
+            const tableBody = document.getElementById('scheduleTable');
+            const row = document.createElement('tr');
+            
+            row.innerHTML = `
+                <td style="padding: 8px; border: 1px solid #e5e7eb;">
+                    <input type="text" value="${timeSlot}" placeholder="Time slot" style="width: 100%; border: none; background: transparent; padding: 4px; font-weight: 600;">
+                </td>
+                <td style="padding: 8px; border: 1px solid #e5e7eb;">
+                    <select style="width: 100%; border: none; background: transparent; padding: 4px;">
+                        <option value="">Select Subject</option>
+                        <option value="mathematics">🔢 Mathematics</option>
+                        <option value="science">🔬 Science</option>
+                        <option value="english">📝 English</option>
+                        <option value="history">🏛️ History</option>
+                        <option value="art">🎨 Art</option>
+                        <option value="music">🎵 Music</option>
+                        <option value="break">☕ Break</option>
+                        <option value="lunch">🍽️ Lunch</option>
+                        <option value="pe">🏃 Physical Education</option>
+                        <option value="other">📚 Other</option>
+                    </select>
+                </td>
+                <td style="padding: 8px; border: 1px solid #e5e7eb;">
+                    <textarea placeholder="Learning objectives for this time slot..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 50px; padding: 4px;"></textarea>
+                </td>
+                <td style="padding: 8px; border: 1px solid #e5e7eb;">
+                    <textarea placeholder="Activities and tasks..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 50px; padding: 4px;"></textarea>
+                </td>
+                <td style="padding: 8px; border: 1px solid #e5e7eb;">
+                    <textarea placeholder="Materials needed..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 50px; padding: 4px;"></textarea>
+                </td>
+                <td style="padding: 8px; border: 1px solid #e5e7eb;">
+                    <input type="text" placeholder="Duration" style="width: 100%; border: none; background: transparent; padding: 4px;">
+                </td>
+                <td style="padding: 8px; border: 1px solid #e5e7eb;">
+                    <textarea placeholder="Notes..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 50px; padding: 4px;"></textarea>
+                </td>
+            `;
+            
+            tableBody.appendChild(row);
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize all interconnected data
+            updateAllSections();
+            updateCountryBasedOptions();
+            updateCalendarTable();
+            
+            // Set default date for lesson form to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('lessonDate').value = today;
+            document.getElementById('scheduleDate').value = today;
+            
+            // Set default school year start to current September
+            const currentYear = new Date().getFullYear();
+            const currentMonth = new Date().getMonth();
+            const schoolYear = currentMonth >= 8 ? currentYear : currentYear - 1; // September = month 8
+            document.getElementById('schoolYearStart').value = `${schoolYear}-09`;
+            
+            // Load saved template if exists
+            const savedTemplate = localStorage.getItem('eduflow_template');
+            if (savedTemplate) {
+                try {
+                    const data = JSON.parse(savedTemplate);
+                    if (data.learnerName) document.getElementById('learnerName').value = data.learnerName;
+                    if (data.teacherName) document.getElementById('teacherName').value = data.teacherName;
+                    if (data.planningData) {
+                        if (data.planningData.learningGoals) document.getElementById('learningGoals').value = data.planningData.learningGoals;
+                        if (data.planningData.prerequisites) document.getElementById('prerequisites').value = data.planningData.prerequisites;
+                        if (data.planningData.teachingNotes) document.getElementById('teachingNotes').value = data.planningData.teachingNotes;
+                        if (data.planningData.mappingInsights) document.getElementById('mappingInsights').value = data.planningData.mappingInsights;
+                    }
+                } catch (e) {
+                    console.log('Could not load saved template');
+                }
+            }
+        });
+
+        // Close modals when clicking outside
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.classList.remove('active');
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96eaf4edf05aed48',t:'MTc1NTExNjg4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
