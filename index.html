@@ -12,10 +12,12 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'SF Pro Display', 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI Variable', 'Segoe UI', system-ui, ui-sans-serif, Helvetica, Arial, sans-serif;
             background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
             min-height: 100vh;
             padding: 20px;
+            font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+            font-optical-sizing: auto;
         }
 
         .container {
@@ -430,7 +432,7 @@
 
         <!-- Participant Information Section -->
         <div id="headerSubtitle" style="padding: 20px 40px; background: linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 100%); border-bottom: 1px solid rgba(148, 163, 184, 0.2);">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 16px;">
+            <div id="inputSection" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 16px;">
                 <div class="form-group" style="margin-bottom: 0;">
                     <label for="learnerName" style="font-size: 0.9rem; color: #374151; margin-bottom: 6px;">👨‍🎓 Learner's Name</label>
                     <input type="text" id="learnerName" class="form-control" placeholder="Enter learner's name" style="background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(59, 130, 246, 0.3);" onchange="updateHeaderInfo()">
@@ -440,7 +442,7 @@
                     <input type="text" id="teacherName" class="form-control" placeholder="Enter teacher's name" style="background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(16, 185, 129, 0.3);" onchange="updateHeaderInfo()">
                 </div>
             </div>
-            <div id="headerInfo" style="display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; font-size: 0.95rem; color: #374151; display: none;">
+            <div id="headerInfo" style="display: none; justify-content: center; gap: 32px; flex-wrap: wrap; font-size: 0.95rem; color: #374151; margin-top: 16px; padding: 16px; background: rgba(255, 255, 255, 0.6); border-radius: 12px; backdrop-filter: blur(10px);">
                 <span id="headerLearner">👨‍🎓 Learner: <strong>Not Set</strong></span>
                 <span id="headerTeacher">👩‍🏫 Teacher: <strong>Not Set</strong></span>
                 <span id="headerGrade">🎓 Grade: <strong>Not Set</strong></span>
@@ -783,7 +785,7 @@
                 <div style="background: white; border-radius: 16px; padding: 24px; border: 2px solid #e5e7eb; margin-bottom: 20px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                         <h3 style="margin: 0; color: #1f2937;">📅 Schedule Configuration</h3>
-                        <button class="btn btn-secondary" onclick="showWeeklyView()" style="background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);">
+                        <button class="btn btn-secondary" onclick="showWeeklyView()" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
                             📅 View Full Week
                         </button>
                     </div>
@@ -911,15 +913,15 @@
             <div style="overflow-x: auto;">
                 <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem;">
                     <thead>
-                        <tr style="background: linear-gradient(135deg, #8b5cf6 0%, #a855f7 100%);">
-                            <th style="padding: 12px; border: 1px solid #7c3aed; font-weight: 600; color: white; min-width: 100px;">Time</th>
-                            <th style="padding: 12px; border: 1px solid #7c3aed; font-weight: 600; color: white; min-width: 120px;">Monday</th>
-                            <th style="padding: 12px; border: 1px solid #7c3aed; font-weight: 600; color: white; min-width: 120px;">Tuesday</th>
-                            <th style="padding: 12px; border: 1px solid #7c3aed; font-weight: 600; color: white; min-width: 120px;">Wednesday</th>
-                            <th style="padding: 12px; border: 1px solid #7c3aed; font-weight: 600; color: white; min-width: 120px;">Thursday</th>
-                            <th style="padding: 12px; border: 1px solid #7c3aed; font-weight: 600; color: white; min-width: 120px;">Friday</th>
-                            <th style="padding: 12px; border: 1px solid #7c3aed; font-weight: 600; color: white; min-width: 120px;">Saturday</th>
-                            <th style="padding: 12px; border: 1px solid #7c3aed; font-weight: 600; color: white; min-width: 120px;">Sunday</th>
+                        <tr style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 50%, #b45309 100%);">
+                            <th style="padding: 12px; border: 1px solid #92400e; font-weight: 600; color: white; min-width: 100px;">Time</th>
+                            <th style="padding: 12px; border: 1px solid #92400e; font-weight: 600; color: white; min-width: 120px;">Monday</th>
+                            <th style="padding: 12px; border: 1px solid #92400e; font-weight: 600; color: white; min-width: 120px;">Tuesday</th>
+                            <th style="padding: 12px; border: 1px solid #92400e; font-weight: 600; color: white; min-width: 120px;">Wednesday</th>
+                            <th style="padding: 12px; border: 1px solid #92400e; font-weight: 600; color: white; min-width: 120px;">Thursday</th>
+                            <th style="padding: 12px; border: 1px solid #92400e; font-weight: 600; color: white; min-width: 120px;">Friday</th>
+                            <th style="padding: 12px; border: 1px solid #92400e; font-weight: 600; color: white; min-width: 120px;">Saturday</th>
+                            <th style="padding: 12px; border: 1px solid #92400e; font-weight: 600; color: white; min-width: 120px;">Sunday</th>
                         </tr>
                     </thead>
                     <tbody id="weeklyScheduleTable">
@@ -1367,20 +1369,57 @@
             const config = calendarConfigs[calendarSystem];
             if (!config) return;
             
-            const totalWeeks = config.periods === 1 ? 36 : config.periods * 12; // Adjust weeks based on periods
-            const weeksPerPeriod = Math.ceil(totalWeeks / config.periods);
+            // Calculate weeks per period based on calendar system
+            let weeksPerPeriod;
+            switch(calendarSystem) {
+                case 'quarterly':
+                    weeksPerPeriod = 9; // 9 weeks per quarter
+                    break;
+                case 'semester':
+                    weeksPerPeriod = 18; // 18 weeks per semester
+                    break;
+                case 'trimester':
+                    weeksPerPeriod = 12; // 12 weeks per trimester
+                    break;
+                case 'monthly':
+                    weeksPerPeriod = 4; // 4 weeks per month
+                    break;
+                default:
+                    weeksPerPeriod = 12;
+            }
             
-            // Update header labels
+            // Limit to maximum 12 columns for display
+            const displayWeeks = Math.min(weeksPerPeriod, 12);
+            
+            // Update header labels and visibility
             for (let i = 1; i <= 12; i++) {
                 const header = document.getElementById(`week${i}Header`);
                 if (header) {
-                    if (i <= weeksPerPeriod) {
+                    if (i <= displayWeeks) {
                         header.textContent = `Week ${i}`;
                         header.style.display = 'table-cell';
                     } else {
                         header.style.display = 'none';
                     }
                 }
+            }
+            
+            // Update existing table rows to show/hide cells
+            const tableBody = document.getElementById('weeklyPlanTable');
+            if (tableBody) {
+                const rows = tableBody.querySelectorAll('tr');
+                rows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    // Skip first 2 cells (subject and textbook), then handle week cells
+                    for (let i = 2; i < cells.length && i < 14; i++) {
+                        const weekIndex = i - 1; // Week 1 starts at index 2, so week number is i-1
+                        if (weekIndex <= displayWeeks) {
+                            cells[i].style.display = 'table-cell';
+                        } else {
+                            cells[i].style.display = 'none';
+                        }
+                    }
+                });
             }
         }
 
@@ -1680,46 +1719,70 @@
             
             // Create month lines based on the months string - single line per month
             let monthLines = '';
+            let monthInputs = '';
             if (months) {
                 const monthArray = months.split(', ');
-                monthLines = monthArray.map(month => `<div style="padding: 6px 0; border-bottom: 1px solid #e5e7eb; min-height: 24px; font-size: 0.85rem;">${month.trim()}</div>`).join('');
+                monthLines = monthArray.map(month => `<div style="padding: 6px 0; border-bottom: 1px solid #e5e7eb; min-height: 24px; font-size: 0.85rem; font-weight: 500; color: #3b82f6;">${month.trim()}</div>`).join('');
+                
+                // Create individual input boxes for each month in other columns
+                monthInputs = monthArray.map(month => 
+                    `<div style="margin-bottom: 8px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc;">
+                        <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 4px; font-weight: 600;">${month.trim()}</div>
+                        <textarea placeholder="Content for ${month.trim()}..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 40px; padding: 2px; font-size: 0.8rem;"></textarea>
+                    </div>`
+                ).join('');
             } else {
-                monthLines = '<div style="padding: 6px 0; border-bottom: 1px solid #e5e7eb; min-height: 24px; font-size: 0.85rem;">Month 1</div><div style="padding: 6px 0; border-bottom: 1px solid #e5e7eb; min-height: 24px; font-size: 0.85rem;">Month 2</div><div style="padding: 6px 0; min-height: 24px; font-size: 0.85rem;">Month 3</div>';
+                monthLines = '<div style="padding: 6px 0; border-bottom: 1px solid #e5e7eb; min-height: 24px; font-size: 0.85rem; font-weight: 500; color: #3b82f6;">Month 1</div><div style="padding: 6px 0; border-bottom: 1px solid #e5e7eb; min-height: 24px; font-size: 0.85rem; font-weight: 500; color: #3b82f6;">Month 2</div><div style="padding: 6px 0; min-height: 24px; font-size: 0.85rem; font-weight: 500; color: #3b82f6;">Month 3</div>';
+                
+                monthInputs = `
+                    <div style="margin-bottom: 8px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc;">
+                        <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 4px; font-weight: 600;">Month 1</div>
+                        <textarea placeholder="Content for Month 1..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 40px; padding: 2px; font-size: 0.8rem;"></textarea>
+                    </div>
+                    <div style="margin-bottom: 8px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc;">
+                        <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 4px; font-weight: 600;">Month 2</div>
+                        <textarea placeholder="Content for Month 2..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 40px; padding: 2px; font-size: 0.8rem;"></textarea>
+                    </div>
+                    <div style="margin-bottom: 8px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc;">
+                        <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 4px; font-weight: 600;">Month 3</div>
+                        <textarea placeholder="Content for Month 3..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 40px; padding: 2px; font-size: 0.8rem;"></textarea>
+                    </div>
+                `;
             }
             
             // Calculate row height based on number of months
             const monthCount = months ? months.split(', ').length : 3;
-            const rowHeight = Math.max(120, monthCount * 32);
+            const rowHeight = Math.max(180, monthCount * 60);
             
             row.innerHTML = `
                 <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top;">
                     <input type="text" value="${timePeriod}" placeholder="Quarter/Period" style="width: 100%; border: none; background: transparent; padding: 4px; font-weight: 600;">
                 </td>
                 <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; min-width: 120px;">
-                    <div style="color: #3b82f6; font-weight: 500;">
+                    <div>
                         ${monthLines}
                     </div>
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top;">
-                    <textarea placeholder="Learning objectives..." style="width: 100%; border: none; background: transparent; resize: vertical; height: ${rowHeight}px; padding: 4px; font-size: 0.9rem;"></textarea>
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; min-height: ${rowHeight}px;">
+                    ${monthInputs}
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top;">
-                    <textarea placeholder="Key concepts and topics..." style="width: 100%; border: none; background: transparent; resize: vertical; height: ${rowHeight}px; padding: 4px; font-size: 0.9rem;"></textarea>
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; min-height: ${rowHeight}px;">
+                    ${monthInputs}
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top;">
-                    <textarea placeholder="Skills and competencies..." style="width: 100%; border: none; background: transparent; resize: vertical; height: ${rowHeight}px; padding: 4px; font-size: 0.9rem;"></textarea>
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; min-height: ${rowHeight}px;">
+                    ${monthInputs}
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top;">
-                    <textarea placeholder="Assessment methods..." style="width: 100%; border: none; background: transparent; resize: vertical; height: ${rowHeight}px; padding: 4px; font-size: 0.9rem;"></textarea>
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; min-height: ${rowHeight}px;">
+                    ${monthInputs}
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top;">
-                    <textarea placeholder="Learning activities..." style="width: 100%; border: none; background: transparent; resize: vertical; height: ${rowHeight}px; padding: 4px; font-size: 0.9rem;"></textarea>
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; min-height: ${rowHeight}px;">
+                    ${monthInputs}
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top;">
-                    <textarea placeholder="Resources and materials..." style="width: 100%; border: none; background: transparent; resize: vertical; height: ${rowHeight}px; padding: 4px; font-size: 0.9rem;"></textarea>
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; min-height: ${rowHeight}px;">
+                    ${monthInputs}
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top;">
-                    <textarea placeholder="Standard alignments..." style="width: 100%; border: none; background: transparent; resize: vertical; height: ${rowHeight}px; padding: 4px; font-size: 0.9rem;"></textarea>
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; min-height: ${rowHeight}px;">
+                    ${monthInputs}
                 </td>
             `;
             
@@ -1747,10 +1810,31 @@
             const tableBody = document.getElementById('weeklyPlanTable');
             const row = document.createElement('tr');
             
+            // Get current calendar system to determine number of weeks to show
+            const calendarSystem = document.getElementById('globalCalendarSystem')?.value || 'quarterly';
+            let weeksToShow;
+            switch(calendarSystem) {
+                case 'quarterly':
+                    weeksToShow = 9;
+                    break;
+                case 'semester':
+                    weeksToShow = 12; // Show 12 weeks max for semester (18 is too many columns)
+                    break;
+                case 'trimester':
+                    weeksToShow = 12;
+                    break;
+                case 'monthly':
+                    weeksToShow = 4;
+                    break;
+                default:
+                    weeksToShow = 12;
+            }
+            
             let weekCells = '';
             for (let i = 1; i <= 12; i++) {
+                const displayStyle = i <= weeksToShow ? 'table-cell' : 'none';
                 weekCells += `
-                    <td style="padding: 8px; border: 1px solid #e5e7eb;">
+                    <td style="padding: 8px; border: 1px solid #e5e7eb; display: ${displayStyle};">
                         <textarea placeholder="Week ${i} content..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 50px; padding: 4px; font-size: 0.8rem;"></textarea>
                     </td>
                 `;
@@ -2132,20 +2216,40 @@
             const academicYear = document.getElementById('globalAcademicYear')?.value || '';
             
             const headerInfo = document.getElementById('headerInfo');
+            const inputSection = document.getElementById('inputSection');
             const headerLearner = document.getElementById('headerLearner');
             const headerTeacher = document.getElementById('headerTeacher');
             const headerGrade = document.getElementById('headerGrade');
             const headerYear = document.getElementById('headerYear');
             
-            // Show info display if any field has content
+            // Show info display and hide input section if any field has content
             if (learnerName || teacherName || gradeLevel || academicYear) {
                 headerInfo.style.display = 'flex';
+                inputSection.style.display = 'none';
                 headerLearner.innerHTML = `👨‍🎓 Learner: <strong>${learnerName || 'Not Set'}</strong>`;
                 headerTeacher.innerHTML = `👩‍🏫 Teacher: <strong>${teacherName || 'Not Set'}</strong>`;
                 headerGrade.innerHTML = `🎓 Grade: <strong>${gradeLevel || 'Not Set'}</strong>`;
                 headerYear.innerHTML = `📅 Year: <strong>${academicYear || 'Not Set'}</strong>`;
+                
+                // Add edit button to allow changes
+                if (!document.getElementById('editHeaderBtn')) {
+                    const editBtn = document.createElement('button');
+                    editBtn.id = 'editHeaderBtn';
+                    editBtn.innerHTML = '✏️ Edit';
+                    editBtn.className = 'btn';
+                    editBtn.style.cssText = 'padding: 6px 12px; font-size: 0.8rem; margin-left: 16px;';
+                    editBtn.onclick = function() {
+                        headerInfo.style.display = 'none';
+                        inputSection.style.display = 'grid';
+                        editBtn.remove();
+                    };
+                    headerInfo.appendChild(editBtn);
+                }
             } else {
                 headerInfo.style.display = 'none';
+                inputSection.style.display = 'grid';
+                const editBtn = document.getElementById('editHeaderBtn');
+                if (editBtn) editBtn.remove();
             }
         }
 
@@ -2216,5 +2320,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96eb676ac5657578',t:'MTc1NTEyMTU3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96eb7f19d430f7c6',t:'MTc1NTEyMjU0My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
