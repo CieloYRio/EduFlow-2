@@ -2020,33 +2020,33 @@
             let monthInputs = '';
             if (months) {
                 const monthArray = months.split(', ');
-                monthLines = monthArray.map(month => `<div style="padding: 12px 8px; border-bottom: 1px solid #e5e7eb; min-height: 40px; font-size: 0.85rem; color: #374151; font-weight: 500;">${month}</div>`).join('');
+                monthLines = monthArray.map(month => `<div style="padding: 12px 8px; border-bottom: 1px solid #e5e7eb; min-height: 72px; font-size: 0.85rem; color: #374151; font-weight: 500; display: flex; align-items: center;">${month}</div>`).join('');
                 
                 // Create individual input boxes with clean spacing for each month
                 monthInputs = monthArray.map((month, index) => 
-                    `<div style="margin-bottom: 8px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc; min-height: 60px;">
-                        <textarea placeholder="${month} content..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 40px; padding: 2px; font-size: 0.85rem;"></textarea>
+                    `<div style="margin-bottom: 8px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc; min-height: 72px; display: flex; align-items: center;">
+                        <textarea placeholder="${month} content..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 48px; padding: 2px; font-size: 0.85rem;"></textarea>
                     </div>`
                 ).join('');
             } else {
-                monthLines = '<div style="padding: 12px 8px; border-bottom: 1px solid #e5e7eb; min-height: 40px; font-size: 0.85rem; color: #374151; font-weight: 500;">Month 1</div><div style="padding: 12px 8px; border-bottom: 1px solid #e5e7eb; min-height: 40px; font-size: 0.85rem; color: #374151; font-weight: 500;">Month 2</div><div style="padding: 12px 8px; min-height: 40px; font-size: 0.85rem; color: #374151; font-weight: 500;">Month 3</div>';
+                monthLines = '<div style="padding: 12px 8px; border-bottom: 1px solid #e5e7eb; min-height: 72px; font-size: 0.85rem; color: #374151; font-weight: 500; display: flex; align-items: center;">Month 1</div><div style="padding: 12px 8px; border-bottom: 1px solid #e5e7eb; min-height: 72px; font-size: 0.85rem; color: #374151; font-weight: 500; display: flex; align-items: center;">Month 2</div><div style="padding: 12px 8px; min-height: 72px; font-size: 0.85rem; color: #374151; font-weight: 500; display: flex; align-items: center;">Month 3</div>';
                 
                 monthInputs = `
-                    <div style="margin-bottom: 8px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc; min-height: 60px;">
-                        <textarea placeholder="Month 1 content..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 40px; padding: 2px; font-size: 0.85rem;"></textarea>
+                    <div style="margin-bottom: 8px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc; min-height: 72px; display: flex; align-items: center;">
+                        <textarea placeholder="Month 1 content..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 48px; padding: 2px; font-size: 0.85rem;"></textarea>
                     </div>
-                    <div style="margin-bottom: 8px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc; min-height: 60px;">
-                        <textarea placeholder="Month 2 content..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 40px; padding: 2px; font-size: 0.85rem;"></textarea>
+                    <div style="margin-bottom: 8px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc; min-height: 72px; display: flex; align-items: center;">
+                        <textarea placeholder="Month 2 content..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 48px; padding: 2px; font-size: 0.85rem;"></textarea>
                     </div>
-                    <div style="margin-bottom: 8px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc; min-height: 60px;">
-                        <textarea placeholder="Month 3 content..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 40px; padding: 2px; font-size: 0.85rem;"></textarea>
+                    <div style="margin-bottom: 8px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc; min-height: 72px; display: flex; align-items: center;">
+                        <textarea placeholder="Month 3 content..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 48px; padding: 2px; font-size: 0.85rem;"></textarea>
                     </div>
                 `;
             }
             
             // Calculate row height based on number of months
             const monthCount = months ? months.split(', ').length : 3;
-            const rowHeight = Math.max(180, monthCount * 60);
+            const rowHeight = Math.max(240, monthCount * 80);
             
             row.innerHTML = `
                 <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top;">
@@ -2553,33 +2553,76 @@
             generateWeeklySchedule();
         }
 
+        // Store daily schedule data for each day
+        let dailyScheduleData = {
+            monday: [],
+            tuesday: [],
+            wednesday: [],
+            thursday: [],
+            friday: [],
+            saturday: [],
+            sunday: []
+        };
+
         function updateWeeklyFromDaily() {
-            // This function syncs daily schedule changes to the weekly view
-            console.log('Daily schedule updated - weekly view will reflect changes when opened');
-            // In a full implementation, this would update the weekly schedule data structure
+            // Get current day and save its schedule data
+            const currentDay = document.getElementById('scheduleDay').value;
+            const scheduleTable = document.getElementById('scheduleTable');
+            const rows = scheduleTable.querySelectorAll('tr');
+            
+            dailyScheduleData[currentDay] = [];
+            
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                if (cells.length >= 2) {
+                    const timeSlot = cells[0].querySelector('input')?.value || '';
+                    const subject = cells[1].querySelector('select')?.value || '';
+                    const subjectText = cells[1].querySelector('select')?.selectedOptions[0]?.textContent || '';
+                    
+                    dailyScheduleData[currentDay].push({
+                        time: timeSlot,
+                        subject: subject,
+                        subjectText: subjectText
+                    });
+                }
+            });
+            
+            console.log(`Updated ${currentDay} schedule data`);
         }
 
         function generateWeeklySchedule() {
             const tableBody = document.getElementById('weeklyScheduleTable');
             tableBody.innerHTML = '';
             
-            const timeSlots = [
-                '8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', 
-                '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM'
+            // Get all unique time slots from daily schedules
+            const allTimeSlots = new Set();
+            Object.values(dailyScheduleData).forEach(dayData => {
+                dayData.forEach(slot => {
+                    if (slot.time) allTimeSlots.add(slot.time);
+                });
+            });
+            
+            // If no daily data exists, use default time slots
+            const timeSlots = allTimeSlots.size > 0 ? Array.from(allTimeSlots).sort() : [
+                '7:00 AM', '8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', 
+                '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM', '7:00 PM', '8:00 PM'
             ];
+            
+            const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
             
             timeSlots.forEach(time => {
                 const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td style="padding: 8px; border: 1px solid #e5e7eb; font-weight: 600; background: #f8fafc;">${time}</td>
-                    <td style="padding: 8px; border: 1px solid #e5e7eb;"><input type="text" placeholder="Subject/Activity" style="width: 100%; border: none; background: transparent; padding: 4px;"></td>
-                    <td style="padding: 8px; border: 1px solid #e5e7eb;"><input type="text" placeholder="Subject/Activity" style="width: 100%; border: none; background: transparent; padding: 4px;"></td>
-                    <td style="padding: 8px; border: 1px solid #e5e7eb;"><input type="text" placeholder="Subject/Activity" style="width: 100%; border: none; background: transparent; padding: 4px;"></td>
-                    <td style="padding: 8px; border: 1px solid #e5e7eb;"><input type="text" placeholder="Subject/Activity" style="width: 100%; border: none; background: transparent; padding: 4px;"></td>
-                    <td style="padding: 8px; border: 1px solid #e5e7eb;"><input type="text" placeholder="Subject/Activity" style="width: 100%; border: none; background: transparent; padding: 4px;"></td>
-                    <td style="padding: 8px; border: 1px solid #e5e7eb;"><input type="text" placeholder="Subject/Activity" style="width: 100%; border: none; background: transparent; padding: 4px;"></td>
-                    <td style="padding: 8px; border: 1px solid #e5e7eb;"><input type="text" placeholder="Subject/Activity" style="width: 100%; border: none; background: transparent; padding: 4px;"></td>
-                `;
+                let rowHTML = `<td style="padding: 8px; border: 1px solid #e5e7eb; font-weight: 600; background: #f8fafc;">${time}</td>`;
+                
+                days.forEach(day => {
+                    const dayData = dailyScheduleData[day] || [];
+                    const timeSlotData = dayData.find(slot => slot.time === time);
+                    const subjectText = timeSlotData ? timeSlotData.subjectText : '';
+                    
+                    rowHTML += `<td style="padding: 8px; border: 1px solid #e5e7eb;"><input type="text" value="${subjectText}" placeholder="Subject/Activity" style="width: 100%; border: none; background: transparent; padding: 4px;"></td>`;
+                });
+                
+                row.innerHTML = rowHTML;
                 tableBody.appendChild(row);
             });
         }
@@ -2589,9 +2632,36 @@
         }
 
         function updateDaySchedule() {
+            // Save current day's data before switching
+            updateWeeklyFromDaily();
+            
             const selectedDay = document.getElementById('scheduleDay').value;
+            const scheduleTable = document.getElementById('scheduleTable');
+            
+            // Clear current table
+            scheduleTable.innerHTML = '';
+            
+            // Load data for selected day
+            const dayData = dailyScheduleData[selectedDay] || [];
+            
+            if (dayData.length > 0) {
+                // Restore saved data for this day
+                dayData.forEach(slotData => {
+                    addTimeSlot(slotData.time);
+                    const lastRow = scheduleTable.lastElementChild;
+                    if (lastRow) {
+                        const subjectSelect = lastRow.cells[1].querySelector('select');
+                        if (subjectSelect && slotData.subject) {
+                            subjectSelect.value = slotData.subject;
+                        }
+                    }
+                });
+            } else {
+                // Load default template for new day
+                loadScheduleTemplate();
+            }
+            
             console.log(`Switched to ${selectedDay} schedule`);
-            // In a full implementation, this would load day-specific schedule data
         }
 
         // Update header info with participant information
@@ -2727,5 +2797,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96eba5ce60f1ee78',t:'MTc1NTEyNDEyOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96f36886d7a8ed1f',t:'MTc1NTIwNTUwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
