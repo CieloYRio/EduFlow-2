@@ -1221,22 +1221,18 @@
         }
 
         function setupAutoSaveListeners() {
-            // Add listeners to all form inputs
-            const inputs = document.querySelectorAll('input, textarea, select');
-            inputs.forEach(input => {
-                input.addEventListener('input', triggerAutoSave);
-                input.addEventListener('change', triggerAutoSave);
-            });
-            
-            // Add listeners to dynamically created elements
+            // Add listeners to dynamically created elements only
+            // Avoid conflicts with specific field listeners
             document.addEventListener('input', function(e) {
-                if (e.target.matches('input, textarea, select')) {
+                if (e.target.matches('input, textarea, select') && 
+                    !['learnerName', 'teacherName'].includes(e.target.id)) {
                     triggerAutoSave();
                 }
             });
             
             document.addEventListener('change', function(e) {
-                if (e.target.matches('input, textarea, select')) {
+                if (e.target.matches('input, textarea, select') && 
+                    !['learnerName', 'teacherName'].includes(e.target.id)) {
                     triggerAutoSave();
                 }
             });
@@ -1549,6 +1545,7 @@
             }
             populateLessonSubjects();
             updateSubjectDropdown();
+            syncWeeklyPlanningWithSubjects();
         }
 
         // Update subject dropdown in planner
@@ -2046,37 +2043,51 @@
             
             // Calculate row height based on number of months
             const monthCount = months ? months.split(', ').length : 3;
-            const rowHeight = Math.max(240, monthCount * 80);
+            const cellHeight = monthCount * 80;
             
             row.innerHTML = `
-                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top;">
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; height: ${cellHeight}px;">
                     <input type="text" value="${timePeriod}" placeholder="Quarter/Period" style="width: 100%; border: none; background: transparent; padding: 4px; font-weight: 600;">
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; min-width: 120px;">
-                    <div>
+                <td style="padding: 0; border: 1px solid #e5e7eb; vertical-align: top; min-width: 120px; height: ${cellHeight}px;">
+                    <div style="height: 100%; display: flex; flex-direction: column;">
                         ${monthLines}
                     </div>
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; min-height: ${rowHeight}px;">
-                    ${monthInputs}
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; height: ${cellHeight}px;">
+                    <div style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+                        ${monthInputs}
+                    </div>
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; min-height: ${rowHeight}px;">
-                    ${monthInputs}
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; height: ${cellHeight}px;">
+                    <div style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+                        ${monthInputs}
+                    </div>
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; min-height: ${rowHeight}px;">
-                    ${monthInputs}
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; height: ${cellHeight}px;">
+                    <div style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+                        ${monthInputs}
+                    </div>
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; min-height: ${rowHeight}px;">
-                    ${monthInputs}
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; height: ${cellHeight}px;">
+                    <div style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+                        ${monthInputs}
+                    </div>
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; min-height: ${rowHeight}px;">
-                    ${monthInputs}
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; height: ${cellHeight}px;">
+                    <div style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+                        ${monthInputs}
+                    </div>
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; min-height: ${rowHeight}px;">
-                    ${monthInputs}
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; height: ${cellHeight}px;">
+                    <div style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+                        ${monthInputs}
+                    </div>
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; min-height: ${rowHeight}px;">
-                    ${monthInputs}
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; height: ${cellHeight}px;">
+                    <div style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+                        ${monthInputs}
+                    </div>
                 </td>
             `;
             
@@ -2225,12 +2236,26 @@
                 const newCell = document.createElement('td');
                 newCell.style.cssText = 'padding: 8px; border: 1px solid #e5e7eb;';
                 newCell.innerHTML = `
-                    <textarea placeholder="Week ${nextWeekNumber} content..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 50px; padding: 4px; font-size: 0.8rem;"></textarea>
+                    <textarea placeholder="Week ${nextWeekNumber} content..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 50px; padding: 4px; font-size: 0.8rem;" onchange="triggerAutoSave()"></textarea>
                 `;
                 row.appendChild(newCell);
             });
             
             alert(`✅ Week ${nextWeekNumber} column added!`);
+        }
+
+        // Update weekly planning to sync with subjects
+        function syncWeeklyPlanningWithSubjects() {
+            const tableBody = document.getElementById('weeklyPlanTable');
+            if (!tableBody) return;
+            
+            // Clear existing rows
+            tableBody.innerHTML = '';
+            
+            // Add rows for each subject
+            subjects.forEach(subject => {
+                addSubjectRow(`${subject.emoji} ${subject.name}`, 'Curriculum Resource');
+            });
         }
 
         function generateSubjectPlan() {
@@ -2443,11 +2468,149 @@
 
         // Export and save functions
         function exportToPDF() {
-            alert('📄 PDF Export Feature\n\nThis would generate a comprehensive PDF report including:\n• Curriculum overview and progress\n• Subject planning details\n• Weekly schedules\n• Daily time slots\n• Assessment records\n\nNote: This is a demo - in a full implementation, this would use a PDF library like jsPDF or html2pdf.');
+            // Create a comprehensive export of all data
+            const exportData = {
+                learnerInfo: {
+                    learnerName: document.getElementById('learnerName')?.value || 'Not Set',
+                    teacherName: document.getElementById('teacherName')?.value || 'Not Set',
+                    gradeLevel: document.getElementById('globalGradeLevel')?.value || 'Not Set',
+                    academicYear: document.getElementById('globalAcademicYear')?.value || 'Not Set'
+                },
+                subjects: subjects,
+                lessons: lessons,
+                planningData: {
+                    learningGoals: document.getElementById('learningGoals')?.value || '',
+                    prerequisites: document.getElementById('prerequisites')?.value || '',
+                    teachingNotes: document.getElementById('teachingNotes')?.value || '',
+                    mappingInsights: document.getElementById('mappingInsights')?.value || ''
+                },
+                tableData: {
+                    monthlyPlan: getTableData('monthlyPlanTable'),
+                    weeklyPlan: getTableData('weeklyPlanTable'),
+                    schedule: getTableData('scheduleTable')
+                },
+                exportDate: new Date().toLocaleDateString()
+            };
+            
+            // Create downloadable JSON file
+            const dataStr = JSON.stringify(exportData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `EduFlow_Curriculum_${exportData.learnerInfo.learnerName || 'Export'}_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            alert('📄 Curriculum Data Exported!\n\nYour complete curriculum plan has been downloaded as a JSON file. This includes:\n• All subject information\n• Planning details\n• Schedule data\n• Progress tracking\n\nYou can import this file later to restore your curriculum.');
         }
 
         function printPlanner() {
-            window.print();
+            // Create a modal for print options
+            const printModal = document.createElement('div');
+            printModal.className = 'modal active';
+            printModal.innerHTML = `
+                <div class="modal-content" style="max-width: 500px;">
+                    <button class="close-modal" onclick="this.closest('.modal').remove()">&times;</button>
+                    <h3 style="margin-bottom: 20px; color: #1f2937;">🖨️ Print Options</h3>
+                    <p style="margin-bottom: 20px; color: #6b7280;">Choose what you'd like to print:</p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px;">
+                        <button class="btn" onclick="printSection('entire'); this.closest('.modal').remove();" style="justify-content: flex-start;">
+                            📄 Print Entire Planner
+                        </button>
+                        <button class="btn btn-secondary" onclick="printSection('schedule'); this.closest('.modal').remove();" style="justify-content: flex-start;">
+                            🕐 Print Daily Schedule Only
+                        </button>
+                        <button class="btn btn-secondary" onclick="printSection('weekly'); this.closest('.modal').remove();" style="justify-content: flex-start;">
+                            📅 Print Weekly Planning Only
+                        </button>
+                        <button class="btn btn-secondary" onclick="printSection('monthly'); this.closest('.modal').remove();" style="justify-content: flex-start;">
+                            📊 Print Monthly Curriculum Only
+                        </button>
+                        <button class="btn btn-secondary" onclick="printSection('subjects'); this.closest('.modal').remove();" style="justify-content: flex-start;">
+                            📚 Print Subject Overview Only
+                        </button>
+                    </div>
+                    
+                    <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                        <button class="btn btn-secondary" onclick="this.closest('.modal').remove()">Cancel</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(printModal);
+        }
+
+        function printSection(section) {
+            const originalContent = document.body.innerHTML;
+            const headerContent = document.querySelector('.header').outerHTML;
+            const participantInfo = document.getElementById('headerSubtitle').outerHTML;
+            
+            let contentToPrint = '';
+            let title = '';
+            
+            switch(section) {
+                case 'schedule':
+                    const scheduleContent = document.getElementById('schedule');
+                    contentToPrint = scheduleContent.outerHTML;
+                    title = 'Daily Schedule';
+                    break;
+                case 'weekly':
+                    const weeklyTable = document.querySelector('#period-wise .planner-view table');
+                    contentToPrint = weeklyTable ? `<div style="padding: 20px;"><h2>Weekly Planning</h2>${weeklyTable.outerHTML}</div>` : '<p>No weekly planning data found</p>';
+                    title = 'Weekly Planning';
+                    break;
+                case 'monthly':
+                    const monthlyTable = document.querySelector('#subject-wise .planner-view table');
+                    contentToPrint = monthlyTable ? `<div style="padding: 20px;"><h2>Monthly Curriculum Planning</h2>${monthlyTable.outerHTML}</div>` : '<p>No monthly planning data found</p>';
+                    title = 'Monthly Curriculum Planning';
+                    break;
+                case 'subjects':
+                    const subjectsContent = document.getElementById('subjects');
+                    contentToPrint = subjectsContent.outerHTML;
+                    title = 'Subject Overview';
+                    break;
+                default:
+                    window.print();
+                    return;
+            }
+            
+            // Create print-friendly version
+            document.body.innerHTML = `
+                <div style="font-family: Arial, sans-serif; max-width: 100%; margin: 0; padding: 20px;">
+                    ${headerContent}
+                    ${participantInfo}
+                    <div style="margin-top: 20px;">
+                        <h1 style="color: #1f2937; margin-bottom: 20px;">${title}</h1>
+                        ${contentToPrint}
+                    </div>
+                    <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e5e7eb; font-size: 0.9rem; color: #6b7280;">
+                        <p>Printed from EduFlow Planner on ${new Date().toLocaleDateString()}</p>
+                    </div>
+                </div>
+                <style>
+                    @media print {
+                        body { margin: 0; padding: 15px; }
+                        .nav-tabs, .btn, button { display: none !important; }
+                        table { border-collapse: collapse; width: 100%; }
+                        th, td { border: 1px solid #000; padding: 8px; font-size: 12px; }
+                        th { background-color: #f0f0f0 !important; }
+                        .modal { display: none !important; }
+                    }
+                </style>
+            `;
+            
+            // Print and restore
+            setTimeout(() => {
+                window.print();
+                setTimeout(() => {
+                    document.body.innerHTML = originalContent;
+                    // Reinitialize the app after restoring content
+                    location.reload();
+                }, 100);
+            }, 500);
         }
 
         function saveTemplate() {
@@ -2602,8 +2765,45 @@
                 });
             });
             
+            // Custom time sorting function
+            function sortTimeSlots(timeSlots) {
+                return timeSlots.sort((a, b) => {
+                    // Convert time strings to comparable format
+                    const timeA = convertTimeToMinutes(a);
+                    const timeB = convertTimeToMinutes(b);
+                    return timeA - timeB;
+                });
+            }
+            
+            function convertTimeToMinutes(timeStr) {
+                // Handle various time formats
+                const cleanTime = timeStr.replace(/[^\d:APMapm\s-]/g, '').trim();
+                let time = cleanTime.split('-')[0].trim(); // Get start time if range
+                
+                if (!time.includes(':')) {
+                    // Handle formats like "8 AM" or "Morning Block 1"
+                    if (time.includes('Morning')) return 480; // 8 AM
+                    if (time.includes('Afternoon')) return 780; // 1 PM
+                    if (time.includes('Evening')) return 1020; // 5 PM
+                    return 480; // Default to 8 AM
+                }
+                
+                const [hourMin, period] = time.split(/\s+/);
+                const [hour, minute = '0'] = hourMin.split(':');
+                let hours = parseInt(hour);
+                const minutes = parseInt(minute);
+                
+                if (period && period.toLowerCase().includes('pm') && hours !== 12) {
+                    hours += 12;
+                } else if (period && period.toLowerCase().includes('am') && hours === 12) {
+                    hours = 0;
+                }
+                
+                return hours * 60 + minutes;
+            }
+            
             // If no daily data exists, use default time slots
-            const timeSlots = allTimeSlots.size > 0 ? Array.from(allTimeSlots).sort() : [
+            const timeSlots = allTimeSlots.size > 0 ? sortTimeSlots(Array.from(allTimeSlots)) : [
                 '7:00 AM', '8:00 AM', '9:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', 
                 '1:00 PM', '2:00 PM', '3:00 PM', '4:00 PM', '5:00 PM', '6:00 PM', '7:00 PM', '8:00 PM'
             ];
@@ -2720,14 +2920,26 @@
             fieldsToWatch.forEach(fieldId => {
                 const field = document.getElementById(fieldId);
                 if (field) {
-                    field.addEventListener('input', function() {
+                    // Remove any existing event listeners to prevent conflicts
+                    field.removeEventListener('input', updateHeaderInfo);
+                    field.removeEventListener('change', updateHeaderInfo);
+                    
+                    // Add clean event listeners
+                    field.addEventListener('input', function(e) {
+                        e.stopPropagation();
                         updateHeaderInfo();
                         triggerAutoSave();
                     });
-                    field.addEventListener('change', function() {
+                    field.addEventListener('change', function(e) {
+                        e.stopPropagation();
                         updateHeaderInfo();
                         triggerAutoSave();
                     });
+                    field.addEventListener('keyup', function(e) {
+                        e.stopPropagation();
+                        updateHeaderInfo();
+                    });
+                    
                     if (fieldId === 'globalSchoolYearStart') {
                         field.addEventListener('change', updateAcademicYearFromStart);
                     }
@@ -2797,5 +3009,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96f36886d7a8ed1f',t:'MTc1NTIwNTUwNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96f37e6e067b0e1d',t:'MTc1NTIwNjQwMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
