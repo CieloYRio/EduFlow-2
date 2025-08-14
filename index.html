@@ -435,11 +435,11 @@
             <div id="inputSection" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 16px;">
                 <div class="form-group" style="margin-bottom: 0;">
                     <label for="learnerName" style="font-size: 0.9rem; color: #374151; margin-bottom: 6px;">👨‍🎓 Learner's Name</label>
-                    <input type="text" id="learnerName" class="form-control" placeholder="Enter learner's name" style="background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(59, 130, 246, 0.3);" onchange="updateHeaderInfo()">
+                    <input type="text" id="learnerName" class="form-control" placeholder="Enter learner's name" style="background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(59, 130, 246, 0.3);">
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
                     <label for="teacherName" style="font-size: 0.9rem; color: #374151; margin-bottom: 6px;">👩‍🏫 Teacher's Name</label>
-                    <input type="text" id="teacherName" class="form-control" placeholder="Enter teacher's name" style="background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(16, 185, 129, 0.3);" onchange="updateHeaderInfo()">
+                    <input type="text" id="teacherName" class="form-control" placeholder="Enter teacher's name" style="background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(16, 185, 129, 0.3);">
                 </div>
             </div>
             <div id="headerInfo" style="display: none; justify-content: center; gap: 32px; flex-wrap: wrap; font-size: 0.95rem; color: #374151; margin-top: 16px; padding: 16px; background: rgba(255, 255, 255, 0.6); border-radius: 12px; backdrop-filter: blur(10px);">
@@ -636,7 +636,7 @@
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: 20px;">
                             <div class="form-group">
                                 <label for="subjectSelect">📚 Select Subject to Plan</label>
-                                <select id="subjectSelect" class="form-control">
+                                <select id="subjectSelect" class="form-control" onchange="updateSubjectTitle()">
                                     <option value="">Choose a subject to focus on</option>
                                     <option value="mathematics">🔢 Mathematics</option>
                                     <option value="science">🔬 Science</option>
@@ -662,7 +662,7 @@
 
                     <!-- Monthly Planning Table -->
                     <div style="background: white; border-radius: 16px; padding: 24px; border: 2px solid #e5e7eb; margin-bottom: 20px;">
-                        <h3 style="margin-bottom: 20px; color: #1f2937;">Monthly Curriculum Planning</h3>
+                        <h3 id="monthlyPlanningTitle" style="margin-bottom: 20px; color: #1f2937;">Monthly Curriculum Planning</h3>
                         <div style="overflow-x: auto;">
                             <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
                                 <thead>
@@ -683,7 +683,10 @@
                                 </tbody>
                             </table>
                         </div>
-                        <button class="btn" onclick="addMonthlyRow()" style="margin-top: 16px;">➕ Add Period</button>
+                        <div style="margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap;">
+                            <button class="btn" onclick="addMonthlyRow()">➕ Add Period</button>
+                            <button class="btn btn-secondary" onclick="addColumnToTable()">📊 Add Column</button>
+                        </div>
                     </div>
 
                     <!-- Additional Planning Sections -->
@@ -773,7 +776,10 @@
                                 </tbody>
                             </table>
                         </div>
-                        <button class="btn" onclick="addSubjectRow()" style="margin-top: 16px;">➕ Add Subject</button>
+                        <div style="margin-top: 16px; display: flex; gap: 12px; flex-wrap: wrap;">
+                            <button class="btn" onclick="addSubjectRow()">➕ Add Subject</button>
+                            <button class="btn btn-secondary" onclick="addWeekColumn()">📅 Add Week</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -969,6 +975,11 @@
     </div>
 
     <script>
+        // Auto-save functionality
+        let autoSaveTimer = null;
+        let lastSaveTime = null;
+        let saveIndicator = null;
+
         // Data storage - All sections are interconnected with real progress tracking
         let subjects = [
             { id: 1, name: 'Mathematics', emoji: '🔢', description: 'Algebra, Geometry, and Statistics', progress: 0, lessons: 0, planningData: {} },
@@ -983,6 +994,254 @@
             // Lessons will be added dynamically and progress calculated from actual data
         ];
 
+        // Auto-save functions
+        function createSaveIndicator() {
+            if (saveIndicator) return;
+            
+            saveIndicator = document.createElement('div');
+            saveIndicator.id = 'saveIndicator';
+            saveIndicator.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: rgba(16, 185, 129, 0.95);
+                color: white;
+                padding: 8px 16px;
+                border-radius: 20px;
+                font-size: 0.85rem;
+                font-weight: 600;
+                z-index: 1001;
+                display: none;
+                backdrop-filter: blur(10px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                transition: all 0.3s ease;
+            `;
+            saveIndicator.innerHTML = '💾 Saving...';
+            document.body.appendChild(saveIndicator);
+        }
+
+        function showSaveIndicator(message = '💾 Saving...', color = 'rgba(16, 185, 129, 0.95)') {
+            if (!saveIndicator) createSaveIndicator();
+            
+            saveIndicator.innerHTML = message;
+            saveIndicator.style.background = color;
+            saveIndicator.style.display = 'block';
+            
+            setTimeout(() => {
+                if (saveIndicator) {
+                    saveIndicator.style.display = 'none';
+                }
+            }, 2000);
+        }
+
+        function autoSave() {
+            const appData = {
+                subjects: subjects,
+                lessons: lessons,
+                formData: {
+                    learnerName: document.getElementById('learnerName')?.value || '',
+                    teacherName: document.getElementById('teacherName')?.value || '',
+                    globalCountryRegion: document.getElementById('globalCountryRegion')?.value || 'us',
+                    globalCalendarSystem: document.getElementById('globalCalendarSystem')?.value || 'quarterly',
+                    globalSchoolYearStart: document.getElementById('globalSchoolYearStart')?.value || '',
+                    globalAcademicYear: document.getElementById('globalAcademicYear')?.value || '',
+                    globalGradeLevel: document.getElementById('globalGradeLevel')?.value || '',
+                    globalInterfaceLanguage: document.getElementById('globalInterfaceLanguage')?.value || 'en'
+                },
+                planningData: {
+                    learningGoals: document.getElementById('learningGoals')?.value || '',
+                    prerequisites: document.getElementById('prerequisites')?.value || '',
+                    teachingNotes: document.getElementById('teachingNotes')?.value || '',
+                    mappingInsights: document.getElementById('mappingInsights')?.value || '',
+                    subjectSelect: document.getElementById('subjectSelect')?.value || '',
+                    subjectFocus: document.getElementById('subjectFocus')?.value || 'unit'
+                },
+                tableData: {
+                    monthlyPlan: getTableData('monthlyPlanTable'),
+                    weeklyPlan: getTableData('weeklyPlanTable'),
+                    schedule: getTableData('scheduleTable')
+                },
+                timestamp: new Date().toISOString(),
+                version: '2.0'
+            };
+            
+            try {
+                localStorage.setItem('eduflow_autosave', JSON.stringify(appData));
+                lastSaveTime = new Date();
+                showSaveIndicator('✅ Saved', 'rgba(16, 185, 129, 0.95)');
+                console.log('Auto-saved at:', lastSaveTime.toLocaleTimeString());
+            } catch (error) {
+                console.error('Auto-save failed:', error);
+                showSaveIndicator('❌ Save Failed', 'rgba(239, 68, 68, 0.95)');
+            }
+        }
+
+        function getTableData(tableId) {
+            const table = document.getElementById(tableId);
+            if (!table) return [];
+            
+            const rows = table.querySelectorAll('tr');
+            const data = [];
+            
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                const rowData = [];
+                cells.forEach(cell => {
+                    const input = cell.querySelector('input, textarea, select');
+                    rowData.push(input ? input.value : cell.textContent.trim());
+                });
+                if (rowData.length > 0) data.push(rowData);
+            });
+            
+            return data;
+        }
+
+        function restoreTableData(tableId, data) {
+            const table = document.getElementById(tableId);
+            if (!table || !data || data.length === 0) return;
+            
+            const tbody = table.querySelector('tbody');
+            if (!tbody) return;
+            
+            tbody.innerHTML = '';
+            
+            data.forEach(rowData => {
+                if (tableId === 'monthlyPlanTable') {
+                    addMonthlyRow(rowData[0] || '', rowData[1] || '');
+                    // Restore cell values
+                    const lastRow = tbody.lastElementChild;
+                    if (lastRow) {
+                        const cells = lastRow.querySelectorAll('td');
+                        cells.forEach((cell, index) => {
+                            if (index < rowData.length) {
+                                const input = cell.querySelector('input, textarea');
+                                if (input && rowData[index]) {
+                                    input.value = rowData[index];
+                                }
+                            }
+                        });
+                    }
+                } else if (tableId === 'weeklyPlanTable') {
+                    addSubjectRow(rowData[0] || '', rowData[1] || '');
+                    // Restore cell values
+                    const lastRow = tbody.lastElementChild;
+                    if (lastRow) {
+                        const cells = lastRow.querySelectorAll('td');
+                        cells.forEach((cell, index) => {
+                            if (index < rowData.length) {
+                                const input = cell.querySelector('input, textarea');
+                                if (input && rowData[index]) {
+                                    input.value = rowData[index];
+                                }
+                            }
+                        });
+                    }
+                } else if (tableId === 'scheduleTable') {
+                    addTimeSlot(rowData[0] || '');
+                    // Restore cell values
+                    const lastRow = tbody.lastElementChild;
+                    if (lastRow) {
+                        const cells = lastRow.querySelectorAll('td');
+                        cells.forEach((cell, index) => {
+                            if (index < rowData.length) {
+                                const input = cell.querySelector('input, textarea, select');
+                                if (input && rowData[index]) {
+                                    input.value = rowData[index];
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        }
+
+        function triggerAutoSave() {
+            // Clear existing timer
+            if (autoSaveTimer) {
+                clearTimeout(autoSaveTimer);
+            }
+            
+            // Show saving indicator immediately
+            showSaveIndicator('💾 Saving...', 'rgba(59, 130, 246, 0.95)');
+            
+            // Set new timer for 1 second delay
+            autoSaveTimer = setTimeout(() => {
+                autoSave();
+            }, 1000);
+        }
+
+        function loadAutoSavedData() {
+            try {
+                const savedData = localStorage.getItem('eduflow_autosave');
+                if (!savedData) return false;
+                
+                const data = JSON.parse(savedData);
+                
+                // Restore subjects and lessons
+                if (data.subjects) subjects = data.subjects;
+                if (data.lessons) lessons = data.lessons;
+                
+                // Restore form data
+                if (data.formData) {
+                    Object.keys(data.formData).forEach(key => {
+                        const element = document.getElementById(key);
+                        if (element && data.formData[key]) {
+                            element.value = data.formData[key];
+                        }
+                    });
+                }
+                
+                // Restore planning data
+                if (data.planningData) {
+                    Object.keys(data.planningData).forEach(key => {
+                        const element = document.getElementById(key);
+                        if (element && data.planningData[key]) {
+                            element.value = data.planningData[key];
+                        }
+                    });
+                }
+                
+                // Restore table data
+                if (data.tableData) {
+                    setTimeout(() => {
+                        if (data.tableData.monthlyPlan) restoreTableData('monthlyPlanTable', data.tableData.monthlyPlan);
+                        if (data.tableData.weeklyPlan) restoreTableData('weeklyPlanTable', data.tableData.weeklyPlan);
+                        if (data.tableData.schedule) restoreTableData('scheduleTable', data.tableData.schedule);
+                    }, 500);
+                }
+                
+                lastSaveTime = new Date(data.timestamp);
+                console.log('Data restored from auto-save:', lastSaveTime.toLocaleTimeString());
+                showSaveIndicator('✅ Data Restored', 'rgba(16, 185, 129, 0.95)');
+                return true;
+            } catch (error) {
+                console.error('Failed to load auto-saved data:', error);
+                return false;
+            }
+        }
+
+        function setupAutoSaveListeners() {
+            // Add listeners to all form inputs
+            const inputs = document.querySelectorAll('input, textarea, select');
+            inputs.forEach(input => {
+                input.addEventListener('input', triggerAutoSave);
+                input.addEventListener('change', triggerAutoSave);
+            });
+            
+            // Add listeners to dynamically created elements
+            document.addEventListener('input', function(e) {
+                if (e.target.matches('input, textarea, select')) {
+                    triggerAutoSave();
+                }
+            });
+            
+            document.addEventListener('change', function(e) {
+                if (e.target.matches('input, textarea, select')) {
+                    triggerAutoSave();
+                }
+            });
+        }
+
         // Global curriculum data
         let globalCurricula = {
             'us': {
@@ -990,140 +1249,160 @@
                 standards: 'Common Core State Standards',
                 subjects: ['Mathematics', 'English Language Arts', 'Science', 'Social Studies', 'Physical Education', 'Arts'],
                 gradeLevels: ['K', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-                calendarSystems: ['semester', 'quarterly', 'trimester']
+                calendarSystems: ['semester', 'quarterly', 'trimester'],
+                standardSemesters: 2
             },
             'uk': {
                 name: '🇬🇧 United Kingdom',
                 standards: 'National Curriculum for England',
                 subjects: ['Mathematics', 'English', 'Science', 'History', 'Geography', 'Art & Design', 'Music', 'PE', 'Computing'],
                 gradeLevels: ['Reception', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9', 'Year 10', 'Year 11'],
-                calendarSystems: ['termly', 'half-termly', 'yearly']
+                calendarSystems: ['termly', 'half-termly', 'yearly'],
+                standardSemesters: 3
             },
             'ca': {
                 name: '🇨🇦 Canada',
                 standards: 'Provincial Curriculum Standards',
                 subjects: ['Mathematics', 'Language Arts', 'Science', 'Social Studies', 'Health & Career Education', 'Arts Education', 'Physical Education'],
                 gradeLevels: ['K', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
-                calendarSystems: ['semester', 'quarterly', 'linear']
+                calendarSystems: ['semester', 'quarterly', 'linear'],
+                standardSemesters: 2
             },
             'au': {
                 name: '🇦🇺 Australia',
                 standards: 'Australian Curriculum',
                 subjects: ['Mathematics', 'English', 'Science', 'Humanities & Social Sciences', 'Health & Physical Education', 'The Arts', 'Technologies'],
                 gradeLevels: ['Foundation', 'Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9', 'Year 10', 'Year 11', 'Year 12'],
-                calendarSystems: ['termly', 'semester', 'yearly']
+                calendarSystems: ['termly', 'semester', 'yearly'],
+                standardSemesters: 4
             },
             'nz': {
                 name: '🇳🇿 New Zealand',
                 standards: 'New Zealand Curriculum',
                 subjects: ['Mathematics', 'English', 'Science', 'Social Sciences', 'Health & Physical Education', 'The Arts', 'Technology'],
                 gradeLevels: ['Year 1', 'Year 2', 'Year 3', 'Year 4', 'Year 5', 'Year 6', 'Year 7', 'Year 8', 'Year 9', 'Year 10', 'Year 11', 'Year 12', 'Year 13'],
-                calendarSystems: ['termly', 'semester', 'yearly']
+                calendarSystems: ['termly', 'semester', 'yearly'],
+                standardSemesters: 4
             },
             'sg': {
                 name: '🇸🇬 Singapore',
                 standards: 'Singapore Curriculum',
                 subjects: ['Mathematics', 'English Language', 'Science', 'Social Studies', 'Mother Tongue', 'Physical Education', 'Arts'],
                 gradeLevels: ['Primary 1', 'Primary 2', 'Primary 3', 'Primary 4', 'Primary 5', 'Primary 6', 'Secondary 1', 'Secondary 2', 'Secondary 3', 'Secondary 4'],
-                calendarSystems: ['semester', 'termly', 'yearly']
+                calendarSystems: ['semester', 'termly', 'yearly'],
+                standardSemesters: 2
             },
             'in': {
                 name: '🇮🇳 India',
                 standards: 'NCERT/CBSE Curriculum',
                 subjects: ['Mathematics', 'English', 'Hindi', 'Science', 'Social Science', 'Physical Education', 'Arts'],
                 gradeLevels: ['Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11', 'Class 12'],
-                calendarSystems: ['semester', 'quarterly', 'yearly']
+                calendarSystems: ['semester', 'quarterly', 'yearly'],
+                standardSemesters: 2
             },
             'de': {
                 name: '🇩🇪 Germany',
                 standards: 'German Education Standards',
                 subjects: ['Mathematik', 'Deutsch', 'Sachunterricht', 'Englisch', 'Geschichte', 'Erdkunde', 'Kunst', 'Musik', 'Sport'],
                 gradeLevels: ['Klasse 1', 'Klasse 2', 'Klasse 3', 'Klasse 4', 'Klasse 5', 'Klasse 6', 'Klasse 7', 'Klasse 8', 'Klasse 9', 'Klasse 10', 'Klasse 11', 'Klasse 12'],
-                calendarSystems: ['semester', 'quarterly', 'yearly']
+                calendarSystems: ['semester', 'quarterly', 'yearly'],
+                standardSemesters: 2
             },
             'fr': {
                 name: '🇫🇷 France',
                 standards: 'French National Education',
                 subjects: ['Mathématiques', 'Français', 'Sciences', 'Histoire-Géographie', 'Éducation Physique', 'Arts Plastiques', 'Musique'],
                 gradeLevels: ['CP', 'CE1', 'CE2', 'CM1', 'CM2', '6ème', '5ème', '4ème', '3ème', '2nde', '1ère', 'Terminale'],
-                calendarSystems: ['trimester', 'semester', 'yearly']
+                calendarSystems: ['trimester', 'semester', 'yearly'],
+                standardSemesters: 3
             },
             'jp': {
                 name: '🇯🇵 Japan',
                 standards: 'Japanese Course of Study',
                 subjects: ['算数/数学', '国語', '理科', '社会', '体育', '音楽', '図画工作/美術', '英語'],
                 gradeLevels: ['小1', '小2', '小3', '小4', '小5', '小6', '中1', '中2', '中3', '高1', '高2', '高3'],
-                calendarSystems: ['trimester', 'semester', 'yearly']
+                calendarSystems: ['trimester', 'semester', 'yearly'],
+                standardSemesters: 3
             },
             'cn': {
                 name: '🇨🇳 China',
                 standards: 'Chinese National Curriculum',
                 subjects: ['数学', '语文', '英语', '科学', '历史', '地理', '体育', '美术', '音乐'],
                 gradeLevels: ['一年级', '二年级', '三年级', '四年级', '五年级', '六年级', '七年级', '八年级', '九年级', '高一', '高二', '高三'],
-                calendarSystems: ['semester', 'quarterly', 'yearly']
+                calendarSystems: ['semester', 'quarterly', 'yearly'],
+                standardSemesters: 2
             },
             'kr': {
                 name: '🇰🇷 South Korea',
                 standards: 'Korean National Curriculum',
                 subjects: ['수학', '국어', '영어', '과학', '사회', '체육', '음악', '미술'],
                 gradeLevels: ['초1', '초2', '초3', '초4', '초5', '초6', '중1', '중2', '중3', '고1', '고2', '고3'],
-                calendarSystems: ['semester', 'quarterly', 'yearly']
+                calendarSystems: ['semester', 'quarterly', 'yearly'],
+                standardSemesters: 2
             },
             'th': {
                 name: '🇹🇭 Thailand',
                 standards: 'Thai Basic Education Core Curriculum',
                 subjects: ['คณิตศาสตร์', 'ภาษาไทย', 'ภาษาอังกฤษ', 'วิทยาศาสตร์', 'สังคมศึกษา', 'พลศึกษา', 'ศิลปะ'],
                 gradeLevels: ['ป.1', 'ป.2', 'ป.3', 'ป.4', 'ป.5', 'ป.6', 'ม.1', 'ม.2', 'ม.3', 'ม.4', 'ม.5', 'ม.6'],
-                calendarSystems: ['semester', 'trimester', 'yearly']
+                calendarSystems: ['semester', 'trimester', 'yearly'],
+                standardSemesters: 2
             },
             'my': {
                 name: '🇲🇾 Malaysia',
                 standards: 'Malaysian National Curriculum',
                 subjects: ['Matematik', 'Bahasa Malaysia', 'English', 'Science', 'Sejarah', 'Geografi', 'Pendidikan Jasmani', 'Seni'],
                 gradeLevels: ['Tahun 1', 'Tahun 2', 'Tahun 3', 'Tahun 4', 'Tahun 5', 'Tahun 6', 'Tingkatan 1', 'Tingkatan 2', 'Tingkatan 3', 'Tingkatan 4', 'Tingkatan 5'],
-                calendarSystems: ['semester', 'termly', 'yearly']
+                calendarSystems: ['semester', 'termly', 'yearly'],
+                standardSemesters: 2
             },
             'ph': {
                 name: '🇵🇭 Philippines',
                 standards: 'K to 12 Basic Education Curriculum',
                 subjects: ['Mathematics', 'Filipino', 'English', 'Science', 'Araling Panlipunan', 'MAPEH', 'TLE'],
                 gradeLevels: ['Kinder', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'],
-                calendarSystems: ['quarterly', 'semester', 'yearly']
+                calendarSystems: ['quarterly', 'semester', 'yearly'],
+                standardSemesters: 4
             },
             'id': {
                 name: '🇮🇩 Indonesia',
                 standards: 'Indonesian National Curriculum',
                 subjects: ['Matematika', 'Bahasa Indonesia', 'Bahasa Inggris', 'IPA', 'IPS', 'Pendidikan Jasmani', 'Seni Budaya'],
                 gradeLevels: ['Kelas 1', 'Kelas 2', 'Kelas 3', 'Kelas 4', 'Kelas 5', 'Kelas 6', 'Kelas 7', 'Kelas 8', 'Kelas 9', 'Kelas 10', 'Kelas 11', 'Kelas 12'],
-                calendarSystems: ['semester', 'quarterly', 'yearly']
+                calendarSystems: ['semester', 'quarterly', 'yearly'],
+                standardSemesters: 2
             },
             'ae': {
                 name: '🇦🇪 UAE',
                 standards: 'UAE National Curriculum',
                 subjects: ['Mathematics', 'Arabic', 'English', 'Science', 'Social Studies', 'Islamic Studies', 'Physical Education', 'Arts'],
                 gradeLevels: ['KG1', 'KG2', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'],
-                calendarSystems: ['semester', 'trimester', 'yearly']
+                calendarSystems: ['semester', 'trimester', 'yearly'],
+                standardSemesters: 2
             },
             'sa': {
                 name: '🇸🇦 Saudi Arabia',
                 standards: 'Saudi National Curriculum',
                 subjects: ['الرياضيات', 'اللغة العربية', 'اللغة الإنجليزية', 'العلوم', 'الدراسات الاجتماعية', 'التربية الإسلامية', 'التربية البدنية', 'الفنون'],
                 gradeLevels: ['الصف الأول', 'الصف الثاني', 'الصف الثالث', 'الصف الرابع', 'الصف الخامس', 'الصف السادس', 'الصف السابع', 'الصف الثامن', 'الصف التاسع', 'الصف العاشر', 'الصف الحادي عشر', 'الصف الثاني عشر'],
-                calendarSystems: ['semester', 'quarterly', 'yearly']
+                calendarSystems: ['semester', 'quarterly', 'yearly'],
+                standardSemesters: 2
             },
             'qa': {
                 name: '🇶🇦 Qatar',
                 standards: 'Qatar National Curriculum',
                 subjects: ['Mathematics', 'Arabic', 'English', 'Science', 'Social Studies', 'Islamic Studies', 'Physical Education', 'Arts'],
                 gradeLevels: ['Foundation', 'Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6', 'Grade 7', 'Grade 8', 'Grade 9', 'Grade 10', 'Grade 11', 'Grade 12'],
-                calendarSystems: ['semester', 'trimester', 'yearly']
+                calendarSystems: ['semester', 'trimester', 'yearly'],
+                standardSemesters: 2
             },
             'tr': {
                 name: '🇹🇷 Turkey',
                 standards: 'Turkish National Curriculum',
                 subjects: ['Matematik', 'Türkçe', 'İngilizce', 'Fen Bilimleri', 'Sosyal Bilgiler', 'Beden Eğitimi', 'Sanat'],
                 gradeLevels: ['1. Sınıf', '2. Sınıf', '3. Sınıf', '4. Sınıf', '5. Sınıf', '6. Sınıf', '7. Sınıf', '8. Sınıf', '9. Sınıf', '10. Sınıf', '11. Sınıf', '12. Sınıf'],
-                calendarSystems: ['semester', 'quarterly', 'yearly']
+                calendarSystems: ['semester', 'quarterly', 'yearly'],
+                standardSemesters: 2
             }
         };
 
@@ -1288,6 +1567,25 @@
             // Restore previous selection if it still exists
             if (currentValue) {
                 select.value = currentValue;
+            }
+        }
+
+        // Update subject title when selection changes
+        function updateSubjectTitle() {
+            const subjectId = document.getElementById('subjectSelect').value;
+            const titleElement = document.getElementById('monthlyPlanningTitle');
+            
+            if (!titleElement) return;
+            
+            if (subjectId) {
+                const subject = subjects.find(s => s.id == subjectId);
+                if (subject) {
+                    titleElement.textContent = `${subject.emoji} ${subject.name} Monthly Curriculum Planning`;
+                } else {
+                    titleElement.textContent = 'Monthly Curriculum Planning';
+                }
+            } else {
+                titleElement.textContent = 'Monthly Curriculum Planning';
             }
         }
 
@@ -1717,35 +2015,31 @@
             const tableBody = document.getElementById('monthlyPlanTable');
             const row = document.createElement('tr');
             
-            // Create month lines based on the months string - single line per month
+            // Create clean spacing based on the months string
             let monthLines = '';
             let monthInputs = '';
             if (months) {
                 const monthArray = months.split(', ');
-                monthLines = monthArray.map(month => `<div style="padding: 6px 0; border-bottom: 1px solid #e5e7eb; min-height: 24px; font-size: 0.85rem; font-weight: 500; color: #3b82f6;">${month.trim()}</div>`).join('');
+                monthLines = monthArray.map(month => `<div style="padding: 12px 8px; border-bottom: 1px solid #e5e7eb; min-height: 40px; font-size: 0.85rem; color: #374151; font-weight: 500;">${month}</div>`).join('');
                 
-                // Create individual input boxes for each month in other columns
-                monthInputs = monthArray.map(month => 
-                    `<div style="margin-bottom: 8px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc;">
-                        <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 4px; font-weight: 600;">${month.trim()}</div>
-                        <textarea placeholder="Content for ${month.trim()}..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 40px; padding: 2px; font-size: 0.8rem;"></textarea>
+                // Create individual input boxes with clean spacing for each month
+                monthInputs = monthArray.map((month, index) => 
+                    `<div style="margin-bottom: 8px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc; min-height: 60px;">
+                        <textarea placeholder="${month} content..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 40px; padding: 2px; font-size: 0.85rem;"></textarea>
                     </div>`
                 ).join('');
             } else {
-                monthLines = '<div style="padding: 6px 0; border-bottom: 1px solid #e5e7eb; min-height: 24px; font-size: 0.85rem; font-weight: 500; color: #3b82f6;">Month 1</div><div style="padding: 6px 0; border-bottom: 1px solid #e5e7eb; min-height: 24px; font-size: 0.85rem; font-weight: 500; color: #3b82f6;">Month 2</div><div style="padding: 6px 0; min-height: 24px; font-size: 0.85rem; font-weight: 500; color: #3b82f6;">Month 3</div>';
+                monthLines = '<div style="padding: 12px 8px; border-bottom: 1px solid #e5e7eb; min-height: 40px; font-size: 0.85rem; color: #374151; font-weight: 500;">Month 1</div><div style="padding: 12px 8px; border-bottom: 1px solid #e5e7eb; min-height: 40px; font-size: 0.85rem; color: #374151; font-weight: 500;">Month 2</div><div style="padding: 12px 8px; min-height: 40px; font-size: 0.85rem; color: #374151; font-weight: 500;">Month 3</div>';
                 
                 monthInputs = `
-                    <div style="margin-bottom: 8px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc;">
-                        <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 4px; font-weight: 600;">Month 1</div>
-                        <textarea placeholder="Content for Month 1..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 40px; padding: 2px; font-size: 0.8rem;"></textarea>
+                    <div style="margin-bottom: 8px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc; min-height: 60px;">
+                        <textarea placeholder="Month 1 content..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 40px; padding: 2px; font-size: 0.85rem;"></textarea>
                     </div>
-                    <div style="margin-bottom: 8px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc;">
-                        <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 4px; font-weight: 600;">Month 2</div>
-                        <textarea placeholder="Content for Month 2..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 40px; padding: 2px; font-size: 0.8rem;"></textarea>
+                    <div style="margin-bottom: 8px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc; min-height: 60px;">
+                        <textarea placeholder="Month 2 content..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 40px; padding: 2px; font-size: 0.85rem;"></textarea>
                     </div>
-                    <div style="margin-bottom: 8px; padding: 8px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc;">
-                        <div style="font-size: 0.75rem; color: #6b7280; margin-bottom: 4px; font-weight: 600;">Month 3</div>
-                        <textarea placeholder="Content for Month 3..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 40px; padding: 2px; font-size: 0.8rem;"></textarea>
+                    <div style="margin-bottom: 8px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc; min-height: 60px;">
+                        <textarea placeholder="Month 3 content..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 40px; padding: 2px; font-size: 0.85rem;"></textarea>
                     </div>
                 `;
             }
@@ -1853,11 +2147,97 @@
             tableBody.appendChild(row);
         }
 
+        // Add a new column to the monthly planning table
+        function addColumnToTable() {
+            const table = document.querySelector('#monthlyPlanTable').closest('table');
+            const headerRow = table.querySelector('thead tr');
+            const bodyRows = table.querySelectorAll('tbody tr');
+            
+            // Add header
+            const newHeader = document.createElement('th');
+            newHeader.style.cssText = 'padding: 12px; border: 1px solid #1e40af; font-weight: 600; color: white;';
+            newHeader.textContent = 'Custom Column';
+            headerRow.appendChild(newHeader);
+            
+            // Add cells to existing rows
+            bodyRows.forEach(row => {
+                const newCell = document.createElement('td');
+                newCell.style.cssText = 'padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; min-height: 180px;';
+                
+                // Get the number of months from the second cell
+                const monthsCell = row.cells[1];
+                const monthCount = monthsCell ? monthsCell.querySelectorAll('div').length : 3;
+                
+                let monthInputs = '';
+                for (let i = 1; i <= monthCount; i++) {
+                    monthInputs += `
+                        <div style="margin-bottom: 8px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc; min-height: 60px;">
+                            <textarea placeholder="Month ${i} content..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 40px; padding: 2px; font-size: 0.85rem;"></textarea>
+                        </div>
+                    `;
+                }
+                
+                newCell.innerHTML = monthInputs;
+                row.appendChild(newCell);
+            });
+            
+            alert('✅ New column added! You can edit the header by clicking on it.');
+        }
+
+        // Add a new week column to the weekly planning table
+        function addWeekColumn() {
+            const table = document.querySelector('#weeklyPlanTable').closest('table');
+            const headerRow = table.querySelector('thead tr');
+            const bodyRows = table.querySelectorAll('tbody tr');
+            
+            // Find the next week number
+            const existingWeekHeaders = Array.from(headerRow.querySelectorAll('th')).slice(2); // Skip first 2 columns
+            const visibleWeeks = existingWeekHeaders.filter(th => th.style.display !== 'none').length;
+            const nextWeekNumber = visibleWeeks + 1;
+            
+            // Check if we can show an existing hidden week first
+            for (let i = 1; i <= 12; i++) {
+                const header = document.getElementById(`week${i}Header`);
+                if (header && header.style.display === 'none') {
+                    header.style.display = 'table-cell';
+                    
+                    // Show corresponding cells in all rows
+                    bodyRows.forEach(row => {
+                        const cells = row.querySelectorAll('td');
+                        if (cells[i + 1]) { // +1 because first 2 cells are subject and textbook
+                            cells[i + 1].style.display = 'table-cell';
+                        }
+                    });
+                    
+                    alert(`✅ Week ${i} column is now visible!`);
+                    return;
+                }
+            }
+            
+            // If all 12 weeks are visible, add a new column beyond the standard 12
+            const newHeader = document.createElement('th');
+            newHeader.style.cssText = 'padding: 12px; border: 1px solid #065f46; font-weight: 600; color: white; min-width: 100px;';
+            newHeader.textContent = `Week ${nextWeekNumber}`;
+            headerRow.appendChild(newHeader);
+            
+            // Add cells to existing rows
+            bodyRows.forEach(row => {
+                const newCell = document.createElement('td');
+                newCell.style.cssText = 'padding: 8px; border: 1px solid #e5e7eb;';
+                newCell.innerHTML = `
+                    <textarea placeholder="Week ${nextWeekNumber} content..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 50px; padding: 4px; font-size: 0.8rem;"></textarea>
+                `;
+                row.appendChild(newCell);
+            });
+            
+            alert(`✅ Week ${nextWeekNumber} column added!`);
+        }
+
         function generateSubjectPlan() {
             const subjectId = document.getElementById('subjectSelect').value;
-            const grade = document.getElementById('gradeLevel').value;
-            const yearStart = document.getElementById('schoolYearStart').value;
-            const calendar = document.getElementById('calendarSystem').value;
+            const grade = document.getElementById('globalGradeLevel').value;
+            const yearStart = document.getElementById('globalSchoolYearStart').value;
+            const calendar = document.getElementById('globalCalendarSystem').value;
             
             if (!subjectId || !grade) {
                 alert('Please select a subject and grade level first.');
@@ -1866,6 +2246,12 @@
             
             const subject = subjects.find(s => s.id == subjectId);
             if (!subject) return;
+            
+            // Update the monthly planning title to show selected subject
+            const titleElement = document.getElementById('monthlyPlanningTitle');
+            if (titleElement) {
+                titleElement.textContent = `${subject.emoji} ${subject.name} Monthly Curriculum Planning`;
+            }
             
             // Auto-populate planning sections with sample data
             document.getElementById('learningGoals').value = `By the end of this unit, students will be able to:\n• Master key ${subject.name} concepts for ${grade}\n• Apply problem-solving strategies\n• Demonstrate understanding through assessments\n• Connect learning to real-world applications`;
@@ -2264,8 +2650,14 @@
             fieldsToWatch.forEach(fieldId => {
                 const field = document.getElementById(fieldId);
                 if (field) {
-                    field.addEventListener('input', updateHeaderInfo);
-                    field.addEventListener('change', updateHeaderInfo);
+                    field.addEventListener('input', function() {
+                        updateHeaderInfo();
+                        triggerAutoSave();
+                    });
+                    field.addEventListener('change', function() {
+                        updateHeaderInfo();
+                        triggerAutoSave();
+                    });
                     if (fieldId === 'globalSchoolYearStart') {
                         field.addEventListener('change', updateAcademicYearFromStart);
                     }
@@ -2275,10 +2667,6 @@
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize all interconnected data
-            updateAllSections();
-            addHeaderUpdateListeners();
-            
             // Set default date for lesson form to today
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('lessonDate').value = today;
@@ -2294,23 +2682,42 @@
             updateGlobalCountrySettings();
             updateGlobalCalendarSystem();
             
-            // Load saved template if exists
-            const savedTemplate = localStorage.getItem('eduflow_template');
-            if (savedTemplate) {
-                try {
-                    const data = JSON.parse(savedTemplate);
-                    if (data.learnerName) document.getElementById('learnerName').value = data.learnerName;
-                    if (data.teacherName) document.getElementById('teacherName').value = data.teacherName;
-                    if (data.planningData) {
-                        if (data.planningData.learningGoals) document.getElementById('learningGoals').value = data.planningData.learningGoals;
-                        if (data.planningData.prerequisites) document.getElementById('prerequisites').value = data.planningData.prerequisites;
-                        if (data.planningData.teachingNotes) document.getElementById('teachingNotes').value = data.planningData.teachingNotes;
-                        if (data.planningData.mappingInsights) document.getElementById('mappingInsights').value = data.planningData.mappingInsights;
+            // Try to load auto-saved data first, then fall back to template
+            const autoSaveLoaded = loadAutoSavedData();
+            
+            if (!autoSaveLoaded) {
+                // Load saved template if exists and no auto-save data
+                const savedTemplate = localStorage.getItem('eduflow_template');
+                if (savedTemplate) {
+                    try {
+                        const data = JSON.parse(savedTemplate);
+                        if (data.learnerName) document.getElementById('learnerName').value = data.learnerName;
+                        if (data.teacherName) document.getElementById('teacherName').value = data.teacherName;
+                        if (data.planningData) {
+                            if (data.planningData.learningGoals) document.getElementById('learningGoals').value = data.planningData.learningGoals;
+                            if (data.planningData.prerequisites) document.getElementById('prerequisites').value = data.planningData.prerequisites;
+                            if (data.planningData.teachingNotes) document.getElementById('teachingNotes').value = data.planningData.teachingNotes;
+                            if (data.planningData.mappingInsights) document.getElementById('mappingInsights').value = data.planningData.mappingInsights;
+                        }
+                    } catch (e) {
+                        console.log('Could not load saved template');
                     }
-                } catch (e) {
-                    console.log('Could not load saved template');
                 }
             }
+            
+            // Initialize all interconnected data
+            updateAllSections();
+            addHeaderUpdateListeners();
+            
+            // Setup auto-save functionality
+            setupAutoSaveListeners();
+            createSaveIndicator();
+            
+            // Update header info after data is loaded
+            setTimeout(() => {
+                updateHeaderInfo();
+                updateSubjectTitle();
+            }, 100);
         });
 
         // Close modals when clicking outside
@@ -2320,5 +2727,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96eb7f19d430f7c6',t:'MTc1NTEyMjU0My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96eba5ce60f1ee78',t:'MTc1NTEyNDEyOS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
