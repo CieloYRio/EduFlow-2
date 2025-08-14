@@ -432,21 +432,23 @@
 
         <!-- Participant Information Section -->
         <div id="headerSubtitle" style="padding: 20px 40px; background: linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 100%); border-bottom: 1px solid rgba(148, 163, 184, 0.2);">
-            <div id="inputSection" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 16px;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 16px;">
                 <div class="form-group" style="margin-bottom: 0;">
                     <label for="learnerName" style="font-size: 0.9rem; color: #374151; margin-bottom: 6px;">👨‍🎓 Learner's Name</label>
-                    <input type="text" id="learnerName" class="form-control" placeholder="Enter learner's name" style="background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(59, 130, 246, 0.3);">
+                    <input type="text" id="learnerName" class="form-control" placeholder="Enter learner's name" style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(59, 130, 246, 0.3);">
                 </div>
                 <div class="form-group" style="margin-bottom: 0;">
                     <label for="teacherName" style="font-size: 0.9rem; color: #374151; margin-bottom: 6px;">👩‍🏫 Teacher's Name</label>
-                    <input type="text" id="teacherName" class="form-control" placeholder="Enter teacher's name" style="background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(16, 185, 129, 0.3);">
+                    <input type="text" id="teacherName" class="form-control" placeholder="Enter teacher's name" style="background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(16, 185, 129, 0.3);">
                 </div>
-            </div>
-            <div id="headerInfo" style="display: none; justify-content: center; gap: 32px; flex-wrap: wrap; font-size: 0.95rem; color: #374151; margin-top: 16px; padding: 16px; background: rgba(255, 255, 255, 0.6); border-radius: 12px; backdrop-filter: blur(10px);">
-                <span id="headerLearner">👨‍🎓 Learner: <strong>Not Set</strong></span>
-                <span id="headerTeacher">👩‍🏫 Teacher: <strong>Not Set</strong></span>
-                <span id="headerGrade">🎓 Grade: <strong>Not Set</strong></span>
-                <span id="headerYear">📅 Year: <strong>Not Set</strong></span>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="displayGrade" style="font-size: 0.9rem; color: #374151; margin-bottom: 6px;">🎓 Grade Level</label>
+                    <input type="text" id="displayGrade" class="form-control" placeholder="Grade level will appear here" readonly style="background: rgba(243, 244, 246, 0.8); border: 1px solid rgba(156, 163, 175, 0.3); color: #6b7280;">
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label for="displayYear" style="font-size: 0.9rem; color: #374151; margin-bottom: 6px;">📅 Academic Year</label>
+                    <input type="text" id="displayYear" class="form-control" placeholder="Academic year will appear here" readonly style="background: rgba(243, 244, 246, 0.8); border: 1px solid rgba(156, 163, 175, 0.3); color: #6b7280;">
+                </div>
             </div>
         </div>
 
@@ -1651,6 +1653,16 @@
                     const month3 = monthNames[(trimesterStartMonth + 2) % 12];
                     const month4 = monthNames[(trimesterStartMonth + 3) % 12];
                     months = `${month1}, ${month2}, ${month3}, ${month4}`;
+                } else if (calendarSystem === 'termly') {
+                    // UK Term system: Autumn, Spring, Summer
+                    const termNames = ['Autumn Term', 'Spring Term', 'Summer Term'];
+                    const termMonths = [
+                        ['September', 'October', 'November', 'December'],
+                        ['January', 'February', 'March', 'April'],
+                        ['April', 'May', 'June', 'July']
+                    ];
+                    periodName = termNames[i - 1];
+                    months = termMonths[i - 1].join(', ');
                 } else if (calendarSystem === 'monthly') {
                     const monthIndex = (startMonth + i - 1) % 12;
                     periodName = monthNames[monthIndex];
@@ -1666,17 +1678,24 @@
             const config = calendarConfigs[calendarSystem];
             if (!config) return;
             
-            // Calculate weeks per period based on calendar system
+            // Get current country to determine weeks per period
+            const currentCountry = document.getElementById('globalCountryRegion')?.value || 'us';
+            
+            // Calculate weeks per period based on calendar system and country
             let weeksPerPeriod;
             switch(calendarSystem) {
                 case 'quarterly':
-                    weeksPerPeriod = 9; // 9 weeks per quarter
+                    // Philippines uses 10 weeks per quarter, others use 9-12
+                    weeksPerPeriod = currentCountry === 'ph' ? 10 : 9;
                     break;
                 case 'semester':
                     weeksPerPeriod = 18; // 18 weeks per semester
                     break;
                 case 'trimester':
                     weeksPerPeriod = 12; // 12 weeks per trimester
+                    break;
+                case 'termly':
+                    weeksPerPeriod = 12; // 12 weeks per term (UK system)
                     break;
                 case 'monthly':
                     weeksPerPeriod = 4; // 4 weeks per month
@@ -2117,18 +2136,24 @@
             const tableBody = document.getElementById('weeklyPlanTable');
             const row = document.createElement('tr');
             
-            // Get current calendar system to determine number of weeks to show
+            // Get current calendar system and country to determine number of weeks to show
             const calendarSystem = document.getElementById('globalCalendarSystem')?.value || 'quarterly';
+            const currentCountry = document.getElementById('globalCountryRegion')?.value || 'us';
+            
             let weeksToShow;
             switch(calendarSystem) {
                 case 'quarterly':
-                    weeksToShow = 12; // Show all 12 weeks for quarterly (Philippines uses 10-12 weeks per quarter)
+                    // Philippines uses 10 weeks per quarter, others use 9-12
+                    weeksToShow = currentCountry === 'ph' ? 10 : 9;
                     break;
                 case 'semester':
                     weeksToShow = 12; // Show 12 weeks max for semester (18 is too many columns)
                     break;
                 case 'trimester':
                     weeksToShow = 12;
+                    break;
+                case 'termly':
+                    weeksToShow = 12; // UK term system
                     break;
                 case 'monthly':
                     weeksToShow = 4;
@@ -2719,11 +2744,48 @@
                         color-adjust: exact !important;
                     }
                     @media print {
-                        body { margin: 10px !important; }
-                        table { font-size: 9px !important; }
-                        th, td { padding: 6px !important; font-size: 9px !important; }
-                        .header { background: #f0f9ff !important; }
-                        * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; }
+                        @page { 
+                            size: A4; 
+                            margin: 0.5in; 
+                        }
+                        body { 
+                            margin: 0 !important; 
+                            font-size: 10px !important;
+                            line-height: 1.2 !important;
+                        }
+                        table { 
+                            font-size: 8px !important; 
+                            width: 100% !important;
+                            table-layout: fixed !important;
+                            page-break-inside: avoid !important;
+                        }
+                        th, td { 
+                            padding: 3px !important; 
+                            font-size: 8px !important; 
+                            word-wrap: break-word !important;
+                            overflow: hidden !important;
+                        }
+                        .header { 
+                            background: #f0f9ff !important; 
+                            font-size: 12px !important;
+                            padding: 10px !important;
+                        }
+                        textarea, input { 
+                            font-size: 7px !important; 
+                            line-height: 1.1 !important;
+                            height: auto !important;
+                            min-height: 20px !important;
+                        }
+                        * { 
+                            -webkit-print-color-adjust: exact !important; 
+                            color-adjust: exact !important; 
+                        }
+                        /* Fit schedule table on one page */
+                        #schedule table {
+                            transform: scale(0.85) !important;
+                            transform-origin: top left !important;
+                            width: 117% !important;
+                        }
                     }
                 </style>
             `;
@@ -2997,41 +3059,18 @@
             const gradeLevel = document.getElementById('globalGradeLevel')?.value || '';
             const academicYear = document.getElementById('globalAcademicYear')?.value || '';
             
-            const headerInfo = document.getElementById('headerInfo');
-            const inputSection = document.getElementById('inputSection');
-            const headerLearner = document.getElementById('headerLearner');
-            const headerTeacher = document.getElementById('headerTeacher');
-            const headerGrade = document.getElementById('headerGrade');
-            const headerYear = document.getElementById('headerYear');
+            // Update display fields
+            const displayGrade = document.getElementById('displayGrade');
+            const displayYear = document.getElementById('displayYear');
             
-            // Show info display and hide input section if any field has content
-            if (learnerName || teacherName || gradeLevel || academicYear) {
-                headerInfo.style.display = 'flex';
-                inputSection.style.display = 'none';
-                headerLearner.innerHTML = `👨‍🎓 Learner: <strong>${learnerName || 'Not Set'}</strong>`;
-                headerTeacher.innerHTML = `👩‍🏫 Teacher: <strong>${teacherName || 'Not Set'}</strong>`;
-                headerGrade.innerHTML = `🎓 Grade: <strong>${gradeLevel || 'Not Set'}</strong>`;
-                headerYear.innerHTML = `📅 Year: <strong>${academicYear || 'Not Set'}</strong>`;
-                
-                // Add edit button to allow changes
-                if (!document.getElementById('editHeaderBtn')) {
-                    const editBtn = document.createElement('button');
-                    editBtn.id = 'editHeaderBtn';
-                    editBtn.innerHTML = '✏️ Edit';
-                    editBtn.className = 'btn';
-                    editBtn.style.cssText = 'padding: 6px 12px; font-size: 0.8rem; margin-left: 16px;';
-                    editBtn.onclick = function() {
-                        headerInfo.style.display = 'none';
-                        inputSection.style.display = 'grid';
-                        editBtn.remove();
-                    };
-                    headerInfo.appendChild(editBtn);
-                }
-            } else {
-                headerInfo.style.display = 'none';
-                inputSection.style.display = 'grid';
-                const editBtn = document.getElementById('editHeaderBtn');
-                if (editBtn) editBtn.remove();
+            if (displayGrade) {
+                displayGrade.value = gradeLevel || '';
+                displayGrade.placeholder = gradeLevel ? gradeLevel : 'Select grade level in Academic Calendar';
+            }
+            
+            if (displayYear) {
+                displayYear.value = academicYear || '';
+                displayYear.placeholder = academicYear ? academicYear : 'Academic year will appear here';
             }
         }
 
@@ -3130,5 +3169,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96f3af3e327ced66',t:'MTc1NTIwODQwMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96f3e4427035ed66',t:'MTc1NTIxMDU3My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
