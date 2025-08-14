@@ -1221,18 +1221,20 @@
         }
 
         function setupAutoSaveListeners() {
-            // Add listeners to dynamically created elements only
-            // Avoid conflicts with specific field listeners
+            // Only add listeners to table elements and planning fields
+            // Avoid conflicts with name fields
             document.addEventListener('input', function(e) {
-                if (e.target.matches('input, textarea, select') && 
-                    !['learnerName', 'teacherName'].includes(e.target.id)) {
+                if (e.target.matches('textarea') && 
+                    e.target.closest('#monthlyPlanTable, #weeklyPlanTable, #scheduleTable')) {
                     triggerAutoSave();
                 }
             });
             
             document.addEventListener('change', function(e) {
                 if (e.target.matches('input, textarea, select') && 
-                    !['learnerName', 'teacherName'].includes(e.target.id)) {
+                    !['learnerName', 'teacherName'].includes(e.target.id) &&
+                    (e.target.closest('#monthlyPlanTable, #weeklyPlanTable, #scheduleTable') || 
+                     ['learningGoals', 'prerequisites', 'teachingNotes', 'mappingInsights'].includes(e.target.id))) {
                     triggerAutoSave();
                 }
             });
@@ -2012,31 +2014,31 @@
             const tableBody = document.getElementById('monthlyPlanTable');
             const row = document.createElement('tr');
             
-            // Create clean spacing based on the months string
+            // Create clean spacing based on the months string with sequence numbers
             let monthLines = '';
             let monthInputs = '';
             if (months) {
                 const monthArray = months.split(', ');
-                monthLines = monthArray.map(month => `<div style="padding: 12px 8px; border-bottom: 1px solid #e5e7eb; min-height: 72px; font-size: 0.85rem; color: #374151; font-weight: 500; display: flex; align-items: center;">${month}</div>`).join('');
+                monthLines = monthArray.map((month, index) => `<div style="padding: 12px 8px; border-bottom: 1px solid #e5e7eb; min-height: 72px; font-size: 0.85rem; color: #374151; font-weight: 500; display: flex; align-items: center;"><span style="background: #3b82f6; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-right: 8px; font-weight: 600;">${index + 1}</span>${month}</div>`).join('');
                 
                 // Create individual input boxes with clean spacing for each month
                 monthInputs = monthArray.map((month, index) => 
-                    `<div style="margin-bottom: 8px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc; min-height: 72px; display: flex; align-items: center;">
-                        <textarea placeholder="${month} content..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 48px; padding: 2px; font-size: 0.85rem;"></textarea>
+                    `<div style="margin-bottom: 8px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc; min-height: 72px; display: flex; align-items: stretch;">
+                        <textarea placeholder="${month} content..." style="width: 100%; border: none; background: transparent; resize: both; min-height: 48px; padding: 2px; font-size: 0.85rem; min-width: 150px;"></textarea>
                     </div>`
                 ).join('');
             } else {
-                monthLines = '<div style="padding: 12px 8px; border-bottom: 1px solid #e5e7eb; min-height: 72px; font-size: 0.85rem; color: #374151; font-weight: 500; display: flex; align-items: center;">Month 1</div><div style="padding: 12px 8px; border-bottom: 1px solid #e5e7eb; min-height: 72px; font-size: 0.85rem; color: #374151; font-weight: 500; display: flex; align-items: center;">Month 2</div><div style="padding: 12px 8px; min-height: 72px; font-size: 0.85rem; color: #374151; font-weight: 500; display: flex; align-items: center;">Month 3</div>';
+                monthLines = '<div style="padding: 12px 8px; border-bottom: 1px solid #e5e7eb; min-height: 72px; font-size: 0.85rem; color: #374151; font-weight: 500; display: flex; align-items: center;"><span style="background: #3b82f6; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-right: 8px; font-weight: 600;">1</span>Month 1</div><div style="padding: 12px 8px; border-bottom: 1px solid #e5e7eb; min-height: 72px; font-size: 0.85rem; color: #374151; font-weight: 500; display: flex; align-items: center;"><span style="background: #3b82f6; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-right: 8px; font-weight: 600;">2</span>Month 2</div><div style="padding: 12px 8px; min-height: 72px; font-size: 0.85rem; color: #374151; font-weight: 500; display: flex; align-items: center;"><span style="background: #3b82f6; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-right: 8px; font-weight: 600;">3</span>Month 3</div>';
                 
                 monthInputs = `
-                    <div style="margin-bottom: 8px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc; min-height: 72px; display: flex; align-items: center;">
-                        <textarea placeholder="Month 1 content..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 48px; padding: 2px; font-size: 0.85rem;"></textarea>
+                    <div style="margin-bottom: 8px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc; min-height: 72px; display: flex; align-items: stretch;">
+                        <textarea placeholder="Month 1 content..." style="width: 100%; border: none; background: transparent; resize: both; min-height: 48px; padding: 2px; font-size: 0.85rem; min-width: 150px;"></textarea>
                     </div>
-                    <div style="margin-bottom: 8px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc; min-height: 72px; display: flex; align-items: center;">
-                        <textarea placeholder="Month 2 content..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 48px; padding: 2px; font-size: 0.85rem;"></textarea>
+                    <div style="margin-bottom: 8px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc; min-height: 72px; display: flex; align-items: stretch;">
+                        <textarea placeholder="Month 2 content..." style="width: 100%; border: none; background: transparent; resize: both; min-height: 48px; padding: 2px; font-size: 0.85rem; min-width: 150px;"></textarea>
                     </div>
-                    <div style="margin-bottom: 8px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc; min-height: 72px; display: flex; align-items: center;">
-                        <textarea placeholder="Month 3 content..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 48px; padding: 2px; font-size: 0.85rem;"></textarea>
+                    <div style="margin-bottom: 8px; padding: 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: #f8fafc; min-height: 72px; display: flex; align-items: stretch;">
+                        <textarea placeholder="Month 3 content..." style="width: 100%; border: none; background: transparent; resize: both; min-height: 48px; padding: 2px; font-size: 0.85rem; min-width: 150px;"></textarea>
                     </div>
                 `;
             }
@@ -2046,45 +2048,45 @@
             const cellHeight = monthCount * 80;
             
             row.innerHTML = `
-                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; height: ${cellHeight}px;">
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; height: ${cellHeight}px; resize: horizontal; overflow: auto; min-width: 120px;">
                     <input type="text" value="${timePeriod}" placeholder="Quarter/Period" style="width: 100%; border: none; background: transparent; padding: 4px; font-weight: 600;">
                 </td>
-                <td style="padding: 0; border: 1px solid #e5e7eb; vertical-align: top; min-width: 120px; height: ${cellHeight}px;">
+                <td style="padding: 0; border: 1px solid #e5e7eb; vertical-align: top; min-width: 120px; height: ${cellHeight}px; resize: horizontal; overflow: auto;">
                     <div style="height: 100%; display: flex; flex-direction: column;">
                         ${monthLines}
                     </div>
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; height: ${cellHeight}px;">
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; height: ${cellHeight}px; resize: both; overflow: auto; min-width: 200px;">
                     <div style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
                         ${monthInputs}
                     </div>
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; height: ${cellHeight}px;">
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; height: ${cellHeight}px; resize: both; overflow: auto; min-width: 200px;">
                     <div style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
                         ${monthInputs}
                     </div>
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; height: ${cellHeight}px;">
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; height: ${cellHeight}px; resize: both; overflow: auto; min-width: 200px;">
                     <div style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
                         ${monthInputs}
                     </div>
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; height: ${cellHeight}px;">
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; height: ${cellHeight}px; resize: both; overflow: auto; min-width: 200px;">
                     <div style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
                         ${monthInputs}
                     </div>
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; height: ${cellHeight}px;">
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; height: ${cellHeight}px; resize: both; overflow: auto; min-width: 200px;">
                     <div style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
                         ${monthInputs}
                     </div>
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; height: ${cellHeight}px;">
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; height: ${cellHeight}px; resize: both; overflow: auto; min-width: 200px;">
                     <div style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
                         ${monthInputs}
                     </div>
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; height: ${cellHeight}px;">
+                <td style="padding: 8px; border: 1px solid #e5e7eb; vertical-align: top; height: ${cellHeight}px; resize: both; overflow: auto; min-width: 200px;">
                     <div style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
                         ${monthInputs}
                     </div>
@@ -2120,7 +2122,7 @@
             let weeksToShow;
             switch(calendarSystem) {
                 case 'quarterly':
-                    weeksToShow = 9;
+                    weeksToShow = 12; // Show all 12 weeks for quarterly (Philippines uses 10-12 weeks per quarter)
                     break;
                 case 'semester':
                     weeksToShow = 12; // Show 12 weeks max for semester (18 is too many columns)
@@ -2139,17 +2141,17 @@
             for (let i = 1; i <= 12; i++) {
                 const displayStyle = i <= weeksToShow ? 'table-cell' : 'none';
                 weekCells += `
-                    <td style="padding: 8px; border: 1px solid #e5e7eb; display: ${displayStyle};">
-                        <textarea placeholder="Week ${i} content..." style="width: 100%; border: none; background: transparent; resize: vertical; min-height: 50px; padding: 4px; font-size: 0.8rem;"></textarea>
+                    <td style="padding: 8px; border: 1px solid #e5e7eb; display: ${displayStyle}; resize: both; overflow: auto; min-width: 100px;">
+                        <textarea placeholder="Week ${i} content..." style="width: 100%; border: none; background: transparent; resize: both; min-height: 50px; padding: 4px; font-size: 0.8rem; min-width: 80px;" onchange="triggerAutoSave()"></textarea>
                     </td>
                 `;
             }
             
             row.innerHTML = `
-                <td style="padding: 8px; border: 1px solid #e5e7eb;">
+                <td style="padding: 8px; border: 1px solid #e5e7eb; resize: horizontal; overflow: auto; min-width: 120px;">
                     <input type="text" value="${subjectName}" placeholder="Subject" style="width: 100%; border: none; background: transparent; padding: 4px; font-weight: 600;">
                 </td>
-                <td style="padding: 8px; border: 1px solid #e5e7eb;">
+                <td style="padding: 8px; border: 1px solid #e5e7eb; resize: horizontal; overflow: auto; min-width: 150px;">
                     <input type="text" value="${textbook}" placeholder="Textbook/Resource" style="width: 100%; border: none; background: transparent; padding: 4px;">
                 </td>
                 ${weekCells}
@@ -2468,43 +2470,129 @@
 
         // Export and save functions
         function exportToPDF() {
-            // Create a comprehensive export of all data
-            const exportData = {
-                learnerInfo: {
-                    learnerName: document.getElementById('learnerName')?.value || 'Not Set',
-                    teacherName: document.getElementById('teacherName')?.value || 'Not Set',
-                    gradeLevel: document.getElementById('globalGradeLevel')?.value || 'Not Set',
-                    academicYear: document.getElementById('globalAcademicYear')?.value || 'Not Set'
-                },
-                subjects: subjects,
-                lessons: lessons,
-                planningData: {
-                    learningGoals: document.getElementById('learningGoals')?.value || '',
-                    prerequisites: document.getElementById('prerequisites')?.value || '',
-                    teachingNotes: document.getElementById('teachingNotes')?.value || '',
-                    mappingInsights: document.getElementById('mappingInsights')?.value || ''
-                },
-                tableData: {
-                    monthlyPlan: getTableData('monthlyPlanTable'),
-                    weeklyPlan: getTableData('weeklyPlanTable'),
-                    schedule: getTableData('scheduleTable')
-                },
-                exportDate: new Date().toLocaleDateString()
-            };
+            // Create a comprehensive HTML document for PDF export
+            const learnerName = document.getElementById('learnerName')?.value || 'Not Set';
+            const teacherName = document.getElementById('teacherName')?.value || 'Not Set';
+            const gradeLevel = document.getElementById('globalGradeLevel')?.value || 'Not Set';
+            const academicYear = document.getElementById('globalAcademicYear')?.value || 'Not Set';
             
-            // Create downloadable JSON file
-            const dataStr = JSON.stringify(exportData, null, 2);
-            const dataBlob = new Blob([dataStr], {type: 'application/json'});
-            const url = URL.createObjectURL(dataBlob);
+            // Get table data
+            const monthlyTable = document.querySelector('#subject-wise table');
+            const weeklyTable = document.querySelector('#period-wise table');
+            const scheduleTable = document.querySelector('#schedule table');
+            
+            // Create PDF-friendly HTML content
+            const pdfContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>EduFlow Curriculum Plan - ${learnerName}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.4; }
+                        .header { text-align: center; margin-bottom: 30px; padding: 20px; background: #f0f9ff; border-radius: 8px; }
+                        .header h1 { color: #0369a1; margin-bottom: 10px; }
+                        .info-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin: 20px 0; }
+                        .info-box { padding: 15px; background: #f8fafc; border-radius: 6px; border-left: 4px solid #3b82f6; }
+                        .section { margin: 30px 0; page-break-inside: avoid; }
+                        .section h2 { color: #1f2937; border-bottom: 2px solid #e5e7eb; padding-bottom: 8px; }
+                        table { width: 100%; border-collapse: collapse; margin: 15px 0; font-size: 12px; }
+                        th, td { border: 1px solid #d1d5db; padding: 8px; text-align: left; vertical-align: top; }
+                        th { background: #f3f4f6; font-weight: bold; }
+                        .planning-text { background: #f9fafb; padding: 15px; border-radius: 6px; margin: 10px 0; }
+                        .footer { margin-top: 40px; text-align: center; color: #6b7280; font-size: 12px; }
+                        @media print { 
+                            body { margin: 15px; } 
+                            .section { page-break-inside: avoid; }
+                            table { font-size: 10px; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>📖 EduFlow Curriculum Plan</h1>
+                        <p>Smart Curriculum Design for Modern Educators</p>
+                    </div>
+                    
+                    <div class="info-grid">
+                        <div class="info-box">
+                            <strong>👨‍🎓 Learner:</strong> ${learnerName}
+                        </div>
+                        <div class="info-box">
+                            <strong>👩‍🏫 Teacher:</strong> ${teacherName}
+                        </div>
+                        <div class="info-box">
+                            <strong>🎓 Grade Level:</strong> ${gradeLevel}
+                        </div>
+                        <div class="info-box">
+                            <strong>📅 Academic Year:</strong> ${academicYear}
+                        </div>
+                    </div>
+                    
+                    <div class="section">
+                        <h2>📚 Subject Overview</h2>
+                        ${subjects.map(subject => `
+                            <div style="margin: 10px 0; padding: 10px; border: 1px solid #e5e7eb; border-radius: 6px;">
+                                <strong>${subject.emoji} ${subject.name}</strong> - ${subject.progress}% Complete
+                                <br><small>${subject.description}</small>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="section">
+                        <h2>📊 Monthly Curriculum Planning</h2>
+                        ${monthlyTable ? monthlyTable.outerHTML : '<p>No monthly planning data available</p>'}
+                    </div>
+                    
+                    <div class="section">
+                        <h2>📅 Weekly Subject Planning</h2>
+                        ${weeklyTable ? weeklyTable.outerHTML : '<p>No weekly planning data available</p>'}
+                    </div>
+                    
+                    <div class="section">
+                        <h2>🕐 Daily Schedule</h2>
+                        ${scheduleTable ? scheduleTable.outerHTML : '<p>No schedule data available</p>'}
+                    </div>
+                    
+                    <div class="section">
+                        <h2>🎯 Planning Details</h2>
+                        <div class="planning-text">
+                            <h3>Learning Goals</h3>
+                            <p>${document.getElementById('learningGoals')?.value || 'Not specified'}</p>
+                        </div>
+                        <div class="planning-text">
+                            <h3>Prerequisites</h3>
+                            <p>${document.getElementById('prerequisites')?.value || 'Not specified'}</p>
+                        </div>
+                        <div class="planning-text">
+                            <h3>Teaching Notes</h3>
+                            <p>${document.getElementById('teachingNotes')?.value || 'Not specified'}</p>
+                        </div>
+                        <div class="planning-text">
+                            <h3>Cross-Curricular Connections</h3>
+                            <p>${document.getElementById('mappingInsights')?.value || 'Not specified'}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="footer">
+                        <p>Generated by EduFlow Planner on ${new Date().toLocaleDateString()}</p>
+                        <p>© ${new Date().getFullYear()} EduFlow - Smart Curriculum Design</p>
+                    </div>
+                </body>
+                </html>
+            `;
+            
+            // Create and download the HTML file
+            const blob = new Blob([pdfContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.download = `EduFlow_Curriculum_${exportData.learnerInfo.learnerName || 'Export'}_${new Date().toISOString().split('T')[0]}.json`;
+            link.download = `EduFlow_Curriculum_${learnerName.replace(/\s+/g, '_')}_${new Date().toISOString().split('T')[0]}.html`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             URL.revokeObjectURL(url);
             
-            alert('📄 Curriculum Data Exported!\n\nYour complete curriculum plan has been downloaded as a JSON file. This includes:\n• All subject information\n• Planning details\n• Schedule data\n• Progress tracking\n\nYou can import this file later to restore your curriculum.');
+            alert('📄 Curriculum Plan Exported!\n\nYour complete curriculum plan has been downloaded as an HTML file. You can:\n\n• Open it in any web browser\n• Print it as PDF using your browser (Ctrl+P → Save as PDF)\n• Share it with colleagues\n• Archive it for your records\n\nThe file includes all your planning data, tables, and subject information in a clean, printable format.');
         }
 
         function printPlanner() {
@@ -2591,13 +2679,51 @@
                     </div>
                 </div>
                 <style>
+                    * { box-sizing: border-box; }
+                    body { margin: 0; padding: 15px; font-family: Arial, sans-serif; }
+                    .nav-tabs, .btn, button { display: none !important; }
+                    table { 
+                        border-collapse: collapse !important; 
+                        width: 100% !important; 
+                        margin: 15px 0 !important;
+                        page-break-inside: avoid;
+                    }
+                    th, td { 
+                        border: 1px solid #000 !important; 
+                        padding: 8px !important; 
+                        font-size: 11px !important;
+                        vertical-align: top !important;
+                        word-wrap: break-word !important;
+                    }
+                    th { 
+                        background-color: #f0f0f0 !important; 
+                        font-weight: bold !important;
+                        -webkit-print-color-adjust: exact !important;
+                        color-adjust: exact !important;
+                    }
+                    .modal { display: none !important; }
+                    textarea, input, select { 
+                        border: none !important; 
+                        background: transparent !important; 
+                        font-size: 10px !important;
+                        padding: 2px !important;
+                        width: 100% !important;
+                        resize: none !important;
+                    }
+                    .header { 
+                        text-align: center; 
+                        margin-bottom: 20px; 
+                        padding: 15px; 
+                        background: #f0f9ff !important;
+                        -webkit-print-color-adjust: exact !important;
+                        color-adjust: exact !important;
+                    }
                     @media print {
-                        body { margin: 0; padding: 15px; }
-                        .nav-tabs, .btn, button { display: none !important; }
-                        table { border-collapse: collapse; width: 100%; }
-                        th, td { border: 1px solid #000; padding: 8px; font-size: 12px; }
-                        th { background-color: #f0f0f0 !important; }
-                        .modal { display: none !important; }
+                        body { margin: 10px !important; }
+                        table { font-size: 9px !important; }
+                        th, td { padding: 6px !important; font-size: 9px !important; }
+                        .header { background: #f0f9ff !important; }
+                        * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; }
                     }
                 </style>
             `;
@@ -2920,25 +3046,20 @@
             fieldsToWatch.forEach(fieldId => {
                 const field = document.getElementById(fieldId);
                 if (field) {
-                    // Remove any existing event listeners to prevent conflicts
-                    field.removeEventListener('input', updateHeaderInfo);
-                    field.removeEventListener('change', updateHeaderInfo);
-                    
-                    // Add clean event listeners
-                    field.addEventListener('input', function(e) {
-                        e.stopPropagation();
-                        updateHeaderInfo();
-                        triggerAutoSave();
-                    });
-                    field.addEventListener('change', function(e) {
-                        e.stopPropagation();
-                        updateHeaderInfo();
-                        triggerAutoSave();
-                    });
-                    field.addEventListener('keyup', function(e) {
-                        e.stopPropagation();
-                        updateHeaderInfo();
-                    });
+                    // Clean approach - only add specific listeners for name fields
+                    if (fieldId === 'learnerName' || fieldId === 'teacherName') {
+                        field.addEventListener('input', function(e) {
+                            updateHeaderInfo();
+                        });
+                        field.addEventListener('keyup', function(e) {
+                            updateHeaderInfo();
+                        });
+                    } else {
+                        field.addEventListener('change', function(e) {
+                            updateHeaderInfo();
+                            triggerAutoSave();
+                        });
+                    }
                     
                     if (fieldId === 'globalSchoolYearStart') {
                         field.addEventListener('change', updateAcademicYearFromStart);
@@ -3009,5 +3130,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96f37e6e067b0e1d',t:'MTc1NTIwNjQwMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96f3af3e327ced66',t:'MTc1NTIwODQwMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
