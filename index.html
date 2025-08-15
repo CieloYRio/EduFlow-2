@@ -3031,19 +3031,22 @@
             // FORCE REFRESH: Always recalculate milestones from scratch
             console.log('🔄 Force updating milestones...');
             
-            // Get milestones from localStorage or create fresh ones
-            let milestones = JSON.parse(localStorage.getItem('eduflow_milestones') || '[]');
+            // ALWAYS reset milestones to ensure latest version with auto-tracking
+            let milestones = [
+                { id: 1, title: 'Subject Master', description: 'Add subjects to your curriculum (auto-updates when you add subjects)', achieved: false, target: 5, current: 0, type: 'subjects', autoTrack: true },
+                { id: 2, title: 'Content Creator', description: 'Fill in planning cells with content (auto-updates as you type)', achieved: false, target: 20, current: 0, type: 'content', autoTrack: true },
+                { id: 3, title: 'Schedule Setter', description: 'Create daily schedule time slots (auto-updates when you add schedules)', achieved: false, target: 6, current: 0, type: 'schedules', autoTrack: true },
+                { id: 4, title: 'Weekly Warrior', description: 'Complete weekly planning for subjects (auto-updates when you fill weekly plans)', achieved: false, target: 1, current: 0, type: 'weekly', autoTrack: true },
+                { id: 5, title: 'Planning Pro', description: 'Complete quarterly planning sections (auto-updates when you fill monthly plans)', achieved: false, target: 1, current: 0, type: 'quarters', autoTrack: true },
+                { id: 6, title: 'Curriculum Designer', description: 'Use the planner for multiple days (auto-updates based on usage)', achieved: false, target: 3, current: 0, type: 'days', autoTrack: true }
+            ];
             
-            if (milestones.length === 0) {
-                milestones = [
-                    { id: 1, title: 'First Week Complete', description: 'Complete your first week of curriculum planning', achieved: false, target: 7, current: 0, type: 'days', autoTrack: true },
-                    { id: 2, title: 'Subject Master', description: 'Add 5 subjects to your curriculum', achieved: false, target: 5, current: 0, type: 'subjects', autoTrack: true },
-                    { id: 3, title: 'Planning Pro', description: 'Complete monthly planning for one quarter', achieved: false, target: 1, current: 0, type: 'quarters', autoTrack: true },
-                    { id: 4, title: 'Schedule Setter', description: 'Create a full daily schedule template', achieved: false, target: 1, current: 0, type: 'schedules', autoTrack: true },
-                    { id: 5, title: 'Content Creator', description: 'Fill in 20 planning cells with content', achieved: false, target: 20, current: 0, type: 'content', autoTrack: true },
-                    { id: 6, title: 'Weekly Warrior', description: 'Complete weekly planning for all subjects', achieved: false, target: 1, current: 0, type: 'weekly', autoTrack: true }
-                ];
-            }
+            // Check if we have saved milestones and merge any custom ones
+            const savedMilestones = JSON.parse(localStorage.getItem('eduflow_milestones') || '[]');
+            const customMilestones = savedMilestones.filter(m => m.type === 'custom' || !m.autoTrack);
+            
+            // Add custom milestones to the default auto-tracking ones
+            milestones = [...milestones, ...customMilestones];
             
             // FORCE UPDATE: Always recalculate ALL milestone progress
             milestones.forEach(milestone => {
@@ -4294,5 +4297,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96fb38c0448e3d3b',t:'MTc1NTI4NzQzNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96fb475ed348ee5f',t:'MTc1NTI4ODAzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
