@@ -1691,6 +1691,80 @@
             syncWeeklyPlanningWithSubjects();
         }
 
+        // Generate subject-specific content for ANY subject (fully dynamic)
+        function getSubjectSpecificContent(subjectName, emoji) {
+            const name = subjectName.toLowerCase();
+            
+            // Subject-specific learning goals and content
+            const subjectMappings = {
+                // Core subjects
+                'mathematics': {
+                    unitGoals: '• Develop problem-solving and analytical thinking skills\n• Master mathematical concepts and procedures\n• Apply math to real-world situations',
+                    quarterGoals: '• Build strong foundation in mathematical reasoning\n• Complete major mathematical skill areas\n• Prepare for advanced mathematical concepts',
+                    termGoals: '• Achieve mathematical fluency and confidence\n• Connect mathematical concepts across topics\n• Develop mathematical communication skills',
+                    semesterGoals: '• Master grade-appropriate mathematical standards\n• Demonstrate mathematical proficiency through assessments\n• Apply mathematical thinking to complex problems',
+                    yearGoals: '• Achieve mathematical proficiency for grade level\n• Prepare for next level mathematical concepts\n• Develop lifelong mathematical thinking skills',
+                    prerequisites: '• Basic arithmetic operations\n• Number sense and place value understanding\n• Problem-solving strategies',
+                    teaching: '• Use manipulatives and visual aids\n• Encourage multiple solution methods\n• Connect to real-world applications\n• Practice computational fluency regularly',
+                    connections: '• Science: Data analysis and measurement\n• Art: Geometric patterns and symmetry\n• Social Studies: Statistics and graphs\n• Daily Life: Money, time, and measurement'
+                },
+                'science': {
+                    unitGoals: '• Develop scientific inquiry and investigation skills\n• Understand key scientific concepts and principles\n• Practice scientific method and observation',
+                    quarterGoals: '• Build scientific knowledge through hands-on exploration\n• Develop critical thinking about natural phenomena\n• Connect scientific concepts to everyday life',
+                    termGoals: '• Master scientific processes and procedures\n• Understand interconnections in natural systems\n• Develop scientific communication skills',
+                    semesterGoals: '• Achieve scientific literacy and understanding\n• Demonstrate scientific thinking through investigations\n• Apply scientific knowledge to solve problems',
+                    yearGoals: '• Master grade-level scientific concepts\n• Develop scientific reasoning and inquiry skills\n• Prepare for advanced scientific study',
+                    prerequisites: '• Basic observation and measurement skills\n• Understanding of scientific method\n• Safety procedures and lab skills',
+                    teaching: '• Use hands-on experiments and investigations\n• Encourage questioning and hypothesis formation\n• Connect to current events and technology\n• Emphasize safety and proper procedures',
+                    connections: '• Mathematics: Data collection and analysis\n• English: Scientific writing and vocabulary\n• Social Studies: Environmental and health issues\n• Technology: Scientific tools and instruments'
+                },
+                'english': {
+                    unitGoals: '• Develop reading comprehension and fluency\n• Improve writing skills and expression\n• Build vocabulary and language understanding',
+                    quarterGoals: '• Master reading strategies and comprehension\n• Develop strong writing and communication skills\n• Expand vocabulary and language usage',
+                    termGoals: '• Achieve reading and writing proficiency\n• Develop critical thinking about texts\n• Master grammar and language conventions',
+                    semesterGoals: '• Demonstrate grade-level reading and writing skills\n• Analyze and interpret various text types\n• Communicate effectively in multiple formats',
+                    yearGoals: '• Master grade-level literacy standards\n• Develop lifelong reading and writing habits\n• Prepare for advanced language arts study',
+                    prerequisites: '• Basic phonics and decoding skills\n• Sight word recognition\n• Basic writing and spelling abilities',
+                    teaching: '• Use diverse texts and genres\n• Encourage daily reading and writing\n• Teach explicit reading strategies\n• Provide regular feedback on writing',
+                    connections: '• Social Studies: Historical texts and documents\n• Science: Scientific writing and research\n• Art: Creative writing and storytelling\n• All subjects: Reading comprehension and communication'
+                },
+                'history': {
+                    unitGoals: '• Understand historical events and their significance\n• Develop chronological thinking skills\n• Analyze cause and effect relationships',
+                    quarterGoals: '• Build knowledge of historical periods and cultures\n• Develop critical thinking about historical sources\n• Connect past events to present situations',
+                    termGoals: '• Master historical thinking and analysis skills\n• Understand diverse perspectives in history\n• Develop research and inquiry abilities',
+                    semesterGoals: '• Demonstrate understanding of historical concepts\n• Analyze primary and secondary sources\n• Make connections between past and present',
+                    yearGoals: '• Master grade-level historical knowledge\n• Develop historical thinking and reasoning\n• Understand civic responsibilities and citizenship',
+                    prerequisites: '• Basic understanding of time and chronology\n• Map and geography skills\n• Reading comprehension abilities',
+                    teaching: '• Use primary sources and artifacts\n• Encourage multiple perspectives\n• Connect to current events\n• Use timelines and graphic organizers',
+                    connections: '• English: Historical literature and documents\n• Geography: Maps and spatial understanding\n• Civics: Government and citizenship\n• Art: Historical art and culture'
+                }
+            };
+            
+            // Check for exact matches first
+            if (subjectMappings[name]) {
+                return subjectMappings[name];
+            }
+            
+            // Check for partial matches or related subjects
+            for (const [key, content] of Object.entries(subjectMappings)) {
+                if (name.includes(key) || key.includes(name)) {
+                    return content;
+                }
+            }
+            
+            // Generic content for any custom subject
+            return {
+                unitGoals: `• Develop foundational skills in ${subjectName}\n• Build understanding of key concepts\n• Apply learning to practical situations`,
+                quarterGoals: `• Master essential ${subjectName} knowledge and skills\n• Develop critical thinking in this subject area\n• Connect learning to broader educational goals`,
+                termGoals: `• Achieve proficiency in ${subjectName} concepts\n• Develop deeper understanding and application\n• Build confidence and competence in subject area`,
+                semesterGoals: `• Demonstrate mastery of ${subjectName} standards\n• Apply knowledge to complex problems and projects\n• Prepare for advanced study in this area`,
+                yearGoals: `• Master all grade-level ${subjectName} objectives\n• Develop lifelong interest and skills\n• Prepare for next level of study`,
+                prerequisites: `• Basic foundational knowledge in ${subjectName}\n• Appropriate grade-level skills\n• Interest and motivation to learn`,
+                teaching: `• Use engaging and interactive methods\n• Provide hands-on learning opportunities\n• Connect to student interests and experiences\n• Assess progress regularly and adjust instruction`,
+                connections: `• Connect to other academic subjects\n• Relate to real-world applications\n• Build interdisciplinary understanding\n• Support overall educational development`
+            };
+        }
+
         // Update subject dropdown in planner
         function updateSubjectDropdown() {
             const select = document.getElementById('subjectSelect');
@@ -2849,37 +2923,39 @@
                 titleElement.textContent = `${subject.emoji} ${subject.name} - ${focusText}`;
             }
             
-            // Auto-populate planning sections with focus-specific data (DYNAMIC - updates based on selections)
+            // Auto-populate planning sections with FULLY DYNAMIC data (updates for ANY subject)
+            const subjectSpecificContent = getSubjectSpecificContent(subject.name, subject.emoji);
+            
             const focusGoals = {
-                'unit': `Unit Learning Goals for ${subject.name}:\n• Master specific concepts within this 4-6 week unit\n• Complete targeted assessments\n• Build foundation for next unit\n• Apply skills in practical contexts`,
-                'quarter': `Quarterly Goals for ${subject.name}:\n• Complete major curriculum milestones\n• Develop comprehensive understanding\n• Prepare for mid-term assessments\n• Build interdisciplinary connections`,
-                'two-terms': `Two-Term Goals for ${subject.name}:\n• Complete major curriculum sections\n• Achieve substantial learning progress\n• Prepare for end-of-term assessments\n• Build strong foundation for remaining terms`,
-                'semester': `Semester Goals for ${subject.name}:\n• Achieve grade-level proficiency standards\n• Complete major projects and assessments\n• Demonstrate mastery of core concepts\n• Prepare for advanced coursework`,
-                'year': `Annual Goals for ${subject.name}:\n• Meet all grade-level standards\n• Complete comprehensive curriculum\n• Demonstrate year-end proficiency\n• Prepare for next grade level`
+                'unit': `Unit Learning Goals for ${subject.emoji} ${subject.name}:\n${subjectSpecificContent.unitGoals}\n• Master specific concepts within this 4-6 week unit\n• Complete targeted assessments\n• Build foundation for next unit\n• Apply skills in practical contexts`,
+                'quarter': `Quarterly Goals for ${subject.emoji} ${subject.name}:\n${subjectSpecificContent.quarterGoals}\n• Complete major curriculum milestones\n• Develop comprehensive understanding\n• Prepare for mid-term assessments\n• Build interdisciplinary connections`,
+                'two-terms': `Two-Term Goals for ${subject.emoji} ${subject.name}:\n${subjectSpecificContent.termGoals}\n• Complete major curriculum sections\n• Achieve substantial learning progress\n• Prepare for end-of-term assessments\n• Build strong foundation for remaining terms`,
+                'semester': `Semester Goals for ${subject.emoji} ${subject.name}:\n${subjectSpecificContent.semesterGoals}\n• Achieve grade-level proficiency standards\n• Complete major projects and assessments\n• Demonstrate mastery of core concepts\n• Prepare for advanced coursework`,
+                'year': `Annual Goals for ${subject.emoji} ${subject.name}:\n${subjectSpecificContent.yearGoals}\n• Meet all grade-level standards\n• Complete comprehensive curriculum\n• Demonstrate year-end proficiency\n• Prepare for next grade level`
             };
             
             const focusPrerequisites = {
-                'unit': `Prerequisites for ${focus} planning:\n• Previous unit/lesson completion\n• Specific foundational skills for this topic\n• Required materials and resources\n• Appropriate skill level for unit content`,
-                'quarter': `Prerequisites for ${focus} planning:\n• Previous quarter completion\n• Grade-level foundational skills\n• Access to quarterly materials\n• Readiness for extended learning period`,
-                'two-terms': `Prerequisites for ${focus} planning:\n• Previous term completion\n• Solid foundational knowledge base\n• Access to comprehensive resources\n• Readiness for substantial learning commitment`,
-                'semester': `Prerequisites for ${focus} planning:\n• Previous semester/grade completion\n• Strong foundational skills\n• Access to semester-long resources\n• Appropriate reading and comprehension level`,
-                'year': `Prerequisites for ${focus} planning:\n• Previous grade completion\n• All prerequisite skills mastered\n• Full access to yearly curriculum materials\n• Readiness for grade-level expectations`
+                'unit': `Prerequisites for ${focus} planning in ${subject.emoji} ${subject.name}:\n${subjectSpecificContent.prerequisites}\n• Previous unit/lesson completion\n• Specific foundational skills for this topic\n• Required materials and resources\n• Appropriate skill level for unit content`,
+                'quarter': `Prerequisites for ${focus} planning in ${subject.emoji} ${subject.name}:\n${subjectSpecificContent.prerequisites}\n• Previous quarter completion\n• Grade-level foundational skills\n• Access to quarterly materials\n• Readiness for extended learning period`,
+                'two-terms': `Prerequisites for ${focus} planning in ${subject.emoji} ${subject.name}:\n${subjectSpecificContent.prerequisites}\n• Previous term completion\n• Solid foundational knowledge base\n• Access to comprehensive resources\n• Readiness for substantial learning commitment`,
+                'semester': `Prerequisites for ${focus} planning in ${subject.emoji} ${subject.name}:\n${subjectSpecificContent.prerequisites}\n• Previous semester/grade completion\n• Strong foundational skills\n• Access to semester-long resources\n• Appropriate reading and comprehension level`,
+                'year': `Prerequisites for ${focus} planning in ${subject.emoji} ${subject.name}:\n${subjectSpecificContent.prerequisites}\n• Previous grade completion\n• All prerequisite skills mastered\n• Full access to yearly curriculum materials\n• Readiness for grade-level expectations`
             };
             
             const focusTeaching = {
-                'unit': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Teaching Strategy:\n• Focus on specific unit objectives\n• Use targeted instructional methods\n• Monitor unit progress weekly\n• Adjust pacing within unit timeframe\n• Prepare for unit assessment`,
-                'quarter': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Teaching Strategy:\n• Plan for quarterly milestones\n• Use varied instructional approaches\n• Monitor progress monthly\n• Adjust pacing across 10-12 weeks\n• Prepare for quarterly assessments`,
-                'two-terms': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Teaching Strategy:\n• Plan for two-term progression\n• Use comprehensive teaching methods\n• Monitor progress bi-monthly\n• Adjust pacing across 20-28 weeks\n• Prepare for term-end evaluations`,
-                'semester': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Teaching Strategy:\n• Plan for semester-long progression\n• Use comprehensive instructional methods\n• Monitor progress regularly\n• Adjust pacing across 18-20 weeks\n• Prepare for semester finals`,
-                'year': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Teaching Strategy:\n• Plan for year-long progression\n• Use diverse instructional methods\n• Monitor progress quarterly\n• Adjust pacing across full academic year\n• Prepare for year-end assessments`
+                'unit': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Teaching Strategy for ${subject.emoji} ${subject.name}:\n${subjectSpecificContent.teaching}\n• Focus on specific unit objectives\n• Use targeted instructional methods\n• Monitor unit progress weekly\n• Adjust pacing within unit timeframe\n• Prepare for unit assessment`,
+                'quarter': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Teaching Strategy for ${subject.emoji} ${subject.name}:\n${subjectSpecificContent.teaching}\n• Plan for quarterly milestones\n• Use varied instructional approaches\n• Monitor progress monthly\n• Adjust pacing across 10-12 weeks\n• Prepare for quarterly assessments`,
+                'two-terms': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Teaching Strategy for ${subject.emoji} ${subject.name}:\n${subjectSpecificContent.teaching}\n• Plan for two-term progression\n• Use comprehensive teaching methods\n• Monitor progress bi-monthly\n• Adjust pacing across 20-28 weeks\n• Prepare for term-end evaluations`,
+                'semester': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Teaching Strategy for ${subject.emoji} ${subject.name}:\n${subjectSpecificContent.teaching}\n• Plan for semester-long progression\n• Use comprehensive instructional methods\n• Monitor progress regularly\n• Adjust pacing across 18-20 weeks\n• Prepare for semester finals`,
+                'year': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Teaching Strategy for ${subject.emoji} ${subject.name}:\n${subjectSpecificContent.teaching}\n• Plan for year-long progression\n• Use diverse instructional methods\n• Monitor progress quarterly\n• Adjust pacing across full academic year\n• Prepare for year-end assessments`
             };
             
             const focusConnections = {
-                'unit': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Connections:\n• Link to other current units\n• Connect to real-world applications\n• Relate to student experiences\n• Build toward next unit\n• Create focused learning pathways`,
-                'quarter': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Connections:\n• Link to other quarterly subjects\n• Connect to seasonal/quarterly themes\n• Relate to student interests\n• Build community connections\n• Create quarterly learning pathways`,
-                'two-terms': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Connections:\n• Link across multiple subjects\n• Connect to extended projects\n• Relate to student development\n• Build lasting community connections\n• Create comprehensive learning pathways`,
-                'semester': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Connections:\n• Link to all semester subjects\n• Connect to major projects\n• Relate to student growth\n• Build strong community connections\n• Create semester-long learning pathways`,
-                'year': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Connections:\n• Link to entire curriculum\n• Connect to year-long projects\n• Relate to student development\n• Build comprehensive community connections\n• Create complete learning pathways`
+                'unit': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Connections for ${subject.emoji} ${subject.name}:\n${subjectSpecificContent.connections}\n• Link to other current units\n• Connect to real-world applications\n• Relate to student experiences\n• Build toward next unit\n• Create focused learning pathways`,
+                'quarter': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Connections for ${subject.emoji} ${subject.name}:\n${subjectSpecificContent.connections}\n• Link to other quarterly subjects\n• Connect to seasonal/quarterly themes\n• Relate to student interests\n• Build community connections\n• Create quarterly learning pathways`,
+                'two-terms': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Connections for ${subject.emoji} ${subject.name}:\n${subjectSpecificContent.connections}\n• Link across multiple subjects\n• Connect to extended projects\n• Relate to student development\n• Build lasting community connections\n• Create comprehensive learning pathways`,
+                'semester': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Connections for ${subject.emoji} ${subject.name}:\n${subjectSpecificContent.connections}\n• Link to all semester subjects\n• Connect to major projects\n• Relate to student growth\n• Build strong community connections\n• Create semester-long learning pathways`,
+                'year': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Connections for ${subject.emoji} ${subject.name}:\n${subjectSpecificContent.connections}\n• Link to entire curriculum\n• Connect to year-long projects\n• Relate to student development\n• Build comprehensive community connections\n• Create complete learning pathways`
             };
             
             // Only update if fields are empty or user confirms overwrite
@@ -2952,13 +3028,16 @@
         function loadMilestones() {
             const container = document.getElementById('milestones');
             
-            // Get milestones from localStorage or use defaults
+            // FORCE REFRESH: Always recalculate milestones from scratch
+            console.log('🔄 Force updating milestones...');
+            
+            // Get milestones from localStorage or create fresh ones
             let milestones = JSON.parse(localStorage.getItem('eduflow_milestones') || '[]');
             
             if (milestones.length === 0) {
                 milestones = [
                     { id: 1, title: 'First Week Complete', description: 'Complete your first week of curriculum planning', achieved: false, target: 7, current: 0, type: 'days', autoTrack: true },
-                    { id: 2, title: 'Subject Master', description: 'Add 5 subjects to your curriculum', achieved: false, target: 5, current: subjects.length, type: 'subjects', autoTrack: true },
+                    { id: 2, title: 'Subject Master', description: 'Add 5 subjects to your curriculum', achieved: false, target: 5, current: 0, type: 'subjects', autoTrack: true },
                     { id: 3, title: 'Planning Pro', description: 'Complete monthly planning for one quarter', achieved: false, target: 1, current: 0, type: 'quarters', autoTrack: true },
                     { id: 4, title: 'Schedule Setter', description: 'Create a full daily schedule template', achieved: false, target: 1, current: 0, type: 'schedules', autoTrack: true },
                     { id: 5, title: 'Content Creator', description: 'Fill in 20 planning cells with content', achieved: false, target: 20, current: 0, type: 'content', autoTrack: true },
@@ -2966,41 +3045,53 @@
                 ];
             }
             
-            // ALWAYS auto-update progress for trackable milestones (this ensures GitHub version updates)
+            // FORCE UPDATE: Always recalculate ALL milestone progress
             milestones.forEach(milestone => {
                 if (milestone.autoTrack) {
                     const previousCurrent = milestone.current;
+                    
+                    // Force recalculation
                     switch(milestone.type) {
                         case 'subjects':
                             milestone.current = subjects.length;
+                            console.log(`📊 Subjects count: ${milestone.current}`);
                             break;
                         case 'content':
                             milestone.current = countFilledPlanningCells();
+                            console.log(`📝 Content cells: ${milestone.current}`);
                             break;
                         case 'schedules':
                             milestone.current = countCompletedSchedules();
+                            console.log(`🕐 Schedules: ${milestone.current}`);
                             break;
                         case 'weekly':
                             milestone.current = countCompletedWeeklyPlanning();
+                            console.log(`📅 Weekly planning: ${milestone.current}`);
                             break;
                         case 'quarters':
                             milestone.current = countCompletedQuarters();
+                            console.log(`📊 Quarters: ${milestone.current}`);
                             break;
                         case 'days':
                             milestone.current = getDaysUsed();
+                            console.log(`📆 Days used: ${milestone.current}`);
                             break;
                     }
+                    
+                    // Update achievement status
+                    const wasAchieved = milestone.achieved;
                     milestone.achieved = milestone.current >= milestone.target;
                     
-                    // Force save if progress changed
-                    if (previousCurrent !== milestone.current) {
-                        console.log(`Milestone ${milestone.title} updated: ${previousCurrent} → ${milestone.current}`);
+                    // Log all changes
+                    if (previousCurrent !== milestone.current || wasAchieved !== milestone.achieved) {
+                        console.log(`🎯 ${milestone.title}: ${previousCurrent} → ${milestone.current} (${milestone.achieved ? 'ACHIEVED' : 'in progress'})`);
                     }
                 }
             });
             
-            // Always save updated milestones back to localStorage
+            // FORCE SAVE: Always save updated milestones
             localStorage.setItem('eduflow_milestones', JSON.stringify(milestones));
+            console.log('💾 Milestones force-saved to localStorage');
             
             container.innerHTML = '';
             
@@ -4203,5 +4294,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96fb1ce507110d17',t:'MTc1NTI4NjI5My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96fb38c0448e3d3b',t:'MTc1NTI4NzQzNC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
