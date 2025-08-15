@@ -2849,7 +2849,7 @@
                 titleElement.textContent = `${subject.emoji} ${subject.name} - ${focusText}`;
             }
             
-            // Auto-populate planning sections with focus-specific data
+            // Auto-populate planning sections with focus-specific data (DYNAMIC - updates based on selections)
             const focusGoals = {
                 'unit': `Unit Learning Goals for ${subject.name}:\n• Master specific concepts within this 4-6 week unit\n• Complete targeted assessments\n• Build foundation for next unit\n• Apply skills in practical contexts`,
                 'quarter': `Quarterly Goals for ${subject.name}:\n• Complete major curriculum milestones\n• Develop comprehensive understanding\n• Prepare for mid-term assessments\n• Build interdisciplinary connections`,
@@ -2858,13 +2858,45 @@
                 'year': `Annual Goals for ${subject.name}:\n• Meet all grade-level standards\n• Complete comprehensive curriculum\n• Demonstrate year-end proficiency\n• Prepare for next grade level`
             };
             
-            document.getElementById('learningGoals').value = focusGoals[focus];
+            const focusPrerequisites = {
+                'unit': `Prerequisites for ${focus} planning:\n• Previous unit/lesson completion\n• Specific foundational skills for this topic\n• Required materials and resources\n• Appropriate skill level for unit content`,
+                'quarter': `Prerequisites for ${focus} planning:\n• Previous quarter completion\n• Grade-level foundational skills\n• Access to quarterly materials\n• Readiness for extended learning period`,
+                'two-terms': `Prerequisites for ${focus} planning:\n• Previous term completion\n• Solid foundational knowledge base\n• Access to comprehensive resources\n• Readiness for substantial learning commitment`,
+                'semester': `Prerequisites for ${focus} planning:\n• Previous semester/grade completion\n• Strong foundational skills\n• Access to semester-long resources\n• Appropriate reading and comprehension level`,
+                'year': `Prerequisites for ${focus} planning:\n• Previous grade completion\n• All prerequisite skills mastered\n• Full access to yearly curriculum materials\n• Readiness for grade-level expectations`
+            };
             
-            document.getElementById('prerequisites').value = `Prerequisites for ${focus} planning:\n• Previous grade/unit completion\n• Required foundational skills\n• Access to materials and resources\n• Appropriate reading/skill level`;
+            const focusTeaching = {
+                'unit': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Teaching Strategy:\n• Focus on specific unit objectives\n• Use targeted instructional methods\n• Monitor unit progress weekly\n• Adjust pacing within unit timeframe\n• Prepare for unit assessment`,
+                'quarter': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Teaching Strategy:\n• Plan for quarterly milestones\n• Use varied instructional approaches\n• Monitor progress monthly\n• Adjust pacing across 10-12 weeks\n• Prepare for quarterly assessments`,
+                'two-terms': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Teaching Strategy:\n• Plan for two-term progression\n• Use comprehensive teaching methods\n• Monitor progress bi-monthly\n• Adjust pacing across 20-28 weeks\n• Prepare for term-end evaluations`,
+                'semester': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Teaching Strategy:\n• Plan for semester-long progression\n• Use comprehensive instructional methods\n• Monitor progress regularly\n• Adjust pacing across 18-20 weeks\n• Prepare for semester finals`,
+                'year': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Teaching Strategy:\n• Plan for year-long progression\n• Use diverse instructional methods\n• Monitor progress quarterly\n• Adjust pacing across full academic year\n• Prepare for year-end assessments`
+            };
             
-            document.getElementById('teachingNotes').value = `${focus.charAt(0).toUpperCase() + focus.slice(1)} Teaching Strategy:\n• Scaffold learning appropriately\n• Use varied instructional methods\n• Monitor progress regularly\n• Adjust pacing as needed\n• Provide differentiated support`;
+            const focusConnections = {
+                'unit': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Connections:\n• Link to other current units\n• Connect to real-world applications\n• Relate to student experiences\n• Build toward next unit\n• Create focused learning pathways`,
+                'quarter': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Connections:\n• Link to other quarterly subjects\n• Connect to seasonal/quarterly themes\n• Relate to student interests\n• Build community connections\n• Create quarterly learning pathways`,
+                'two-terms': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Connections:\n• Link across multiple subjects\n• Connect to extended projects\n• Relate to student development\n• Build lasting community connections\n• Create comprehensive learning pathways`,
+                'semester': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Connections:\n• Link to all semester subjects\n• Connect to major projects\n• Relate to student growth\n• Build strong community connections\n• Create semester-long learning pathways`,
+                'year': `${focus.charAt(0).toUpperCase() + focus.slice(1)} Connections:\n• Link to entire curriculum\n• Connect to year-long projects\n• Relate to student development\n• Build comprehensive community connections\n• Create complete learning pathways`
+            };
             
-            document.getElementById('mappingInsights').value = `${focus.charAt(0).toUpperCase() + focus.slice(1)} Connections:\n• Link to other subjects\n• Real-world applications\n• Student interests and experiences\n• Community connections\n• Future learning pathways`;
+            // Only update if fields are empty or user confirms overwrite
+            const learningGoalsField = document.getElementById('learningGoals');
+            const prerequisitesField = document.getElementById('prerequisites');
+            const teachingNotesField = document.getElementById('teachingNotes');
+            const mappingInsightsField = document.getElementById('mappingInsights');
+            
+            const shouldUpdate = learningGoalsField.value.trim() === '' || 
+                               confirm('This will overwrite your existing planning content. Continue?');
+            
+            if (shouldUpdate) {
+                learningGoalsField.value = focusGoals[focus];
+                prerequisitesField.value = focusPrerequisites[focus];
+                teachingNotesField.value = focusTeaching[focus];
+                mappingInsightsField.value = focusConnections[focus];
+            }
             
             // Update the calendar table with the new system and focus
             updatePlanningFocus();
@@ -2932,14 +2964,12 @@
                     { id: 5, title: 'Content Creator', description: 'Fill in 20 planning cells with content', achieved: false, target: 20, current: 0, type: 'content', autoTrack: true },
                     { id: 6, title: 'Weekly Warrior', description: 'Complete weekly planning for all subjects', achieved: false, target: 1, current: 0, type: 'weekly', autoTrack: true }
                 ];
-                
-                // Save the default milestones to localStorage so they persist
-                localStorage.setItem('eduflow_milestones', JSON.stringify(milestones));
             }
             
-            // Auto-update progress for trackable milestones
+            // ALWAYS auto-update progress for trackable milestones (this ensures GitHub version updates)
             milestones.forEach(milestone => {
                 if (milestone.autoTrack) {
+                    const previousCurrent = milestone.current;
                     switch(milestone.type) {
                         case 'subjects':
                             milestone.current = subjects.length;
@@ -2961,8 +2991,16 @@
                             break;
                     }
                     milestone.achieved = milestone.current >= milestone.target;
+                    
+                    // Force save if progress changed
+                    if (previousCurrent !== milestone.current) {
+                        console.log(`Milestone ${milestone.title} updated: ${previousCurrent} → ${milestone.current}`);
+                    }
                 }
             });
+            
+            // Always save updated milestones back to localStorage
+            localStorage.setItem('eduflow_milestones', JSON.stringify(milestones));
             
             container.innerHTML = '';
             
@@ -4165,5 +4203,5 @@
             }
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96fb02fd62d30d9c',t:'MTc1NTI4NTIzMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96fb1ce507110d17',t:'MTc1NTI4NjI5My4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
